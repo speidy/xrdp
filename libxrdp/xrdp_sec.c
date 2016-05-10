@@ -453,6 +453,7 @@ xrdp_sec_create(struct xrdp_rdp *owner, struct trans *trans)
     self->mcs_layer = xrdp_mcs_create(self, trans, &(self->client_mcs_data),
                                       &(self->server_mcs_data));
     self->fastpath_layer = xrdp_fastpath_create(self, trans);
+    self->nla_layer = xrdp_nla_create(self, trans);
     self->chan_layer = xrdp_channel_create(self, self->mcs_layer);
     self->is_security_header_present = 1;
     DEBUG((" out xrdp_sec_create"));
@@ -473,6 +474,7 @@ xrdp_sec_delete(struct xrdp_sec *self)
     xrdp_channel_delete(self->chan_layer);
     xrdp_mcs_delete(self->mcs_layer);
     xrdp_fastpath_delete(self->fastpath_layer);
+    xrdp_nla_delete(self->nla_layer);
     ssl_rc4_info_delete(self->decrypt_rc4_info); /* TODO clear all data */
     ssl_rc4_info_delete(self->encrypt_rc4_info); /* TODO clear all data */
     ssl_des3_info_delete(self->decrypt_fips_info);
@@ -2280,6 +2282,16 @@ xrdp_sec_incoming(struct xrdp_sec *self)
         self->crypt_level = CRYPT_LEVEL_NONE;
         self->crypt_method = CRYPT_METHOD_NONE;
         self->rsa_key_bytes = 0;
+
+        if (iso->selectedProtocol == PROTOCOL_HYBRID)
+        {
+        	/* CredSSP */
+        	if (xrdp_nla_authenticate(self->nla_layer) != 0)
+			{
+        		return 1; /* error */
+			}
+
+        }
 
     }
     else

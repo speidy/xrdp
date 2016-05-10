@@ -26,7 +26,7 @@
 #include "libxrdp.h"
 #include "log.h"
 
-#define LOG_LEVEL 1
+#define LOG_LEVEL 11
 #define LLOG(_level, _args) \
     do { if (_level < LOG_LEVEL) { g_write _args ; } } while (0)
 #define LLOGLN(_level, _args) \
@@ -99,7 +99,18 @@ xrdp_iso_negotiate_security(struct xrdp_iso *self)
             }
             break;
         case PROTOCOL_HYBRID:
+        	if (self->requestedProtocol & PROTOCOL_HYBRID)
+        	{
+        		self->selectedProtocol = PROTOCOL_HYBRID;
+        	}
+        	else
+        	{
+        		self->failureCode = HYBRID_REQUIRED_BY_SERVER;
+        		rv = 1; /* error */
+        	}
+        	break;
         case PROTOCOL_HYBRID_EX:
+        	/* fall through */
         default:
             if ((self->requestedProtocol & PROTOCOL_SSL) &&
                 g_file_readable(client_info->certificate) &&
@@ -107,6 +118,18 @@ xrdp_iso_negotiate_security(struct xrdp_iso *self)
             {
                 /* that's a patch since we don't support CredSSP for now */
                 self->selectedProtocol = PROTOCOL_SSL;
+
+                /* ssl is required for hybrid */
+            	if (self->requestedProtocol & PROTOCOL_HYBRID)
+            	{
+            		self->selectedProtocol = PROTOCOL_HYBRID;
+            	}
+
+            	if (self->requestedProtocol & PROTOCOL_HYBRID_EX)
+            	{
+            		// TODO
+//            		self->selectedProtocol = PROTOCOL_HYBRID_EX;
+            	}
             }
             else
             {

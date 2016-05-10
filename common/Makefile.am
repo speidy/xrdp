@@ -55,7 +55,12 @@ libcommon_la_SOURCES = \
   thread_calls.h \
   trans.c \
   trans.h \
-  $(PIXMAN_SOURCES)
+  $(PIXMAN_SOURCES) \
+  xrdp_client_info.h \
+  xrdp_constants.h \
+  xrdp_rail.h \
+  ber.c \
+  ber.h
 
 libcommon_la_LIBADD = \
   -lpthread \

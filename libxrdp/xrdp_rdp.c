@@ -199,7 +199,7 @@ xrdp_rdp_read_config(struct xrdp_client_info *client_info)
             }
             else if (g_strcasecmp(value, "hybrid") == 0)
             {
-                client_info->security_layer = PROTOCOL_SSL | PROTOCOL_HYBRID;
+                client_info->security_layer =  PROTOCOL_HYBRID;
             }
             else if (g_strcasecmp(value, "negotiate") == 0)
             {

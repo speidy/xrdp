@@ -96,6 +96,7 @@ struct xrdp_sec
     struct xrdp_rdp *rdp_layer; /* owner */
     struct xrdp_mcs *mcs_layer;
     struct xrdp_fastpath *fastpath_layer;
+    struct xrdp_nla *nla_layer;
     struct xrdp_channel *chan_layer;
     char server_random[32];
     char client_random[256];
@@ -573,4 +574,30 @@ int
 xrdp_caps_send_demand_active(struct xrdp_rdp *self);
 int
 xrdp_caps_process_confirm_active(struct xrdp_rdp *self, struct stream *s);
+
+/* xrdp_nla.c */
+struct blob
+{
+	int length;
+	unsigned char *data;
+};
+
+/* nla */
+struct xrdp_nla
+{
+    struct xrdp_sec *sec_layer; /* owner */
+    struct trans *trans;
+    int cerdssp_ver;
+    struct blob *negoTokens;
+    struct blob *authInfo;
+    struct blob *pubKeyAuth;
+};
+struct xrdp_nla *APP_CC
+xrdp_nla_create(struct xrdp_sec *owner, struct trans *trans);
+void APP_CC
+xrdp_nla_delete(struct xrdp_nla *self);
+int APP_CC
+xrdp_nla_authenticate(struct xrdp_nla *self);
+
+
 #endif

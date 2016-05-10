@@ -386,6 +386,7 @@ trans_check_wait_objs(struct trans *self)
 
                 if (read_bytes == -1)
                 {
+                	g_writeln("read_bytes is -1");
                     if (g_tcp_last_error_would_block(self->sck))
                     {
                         /* ok, but shouldn't happen */
