@@ -759,7 +759,22 @@ xrdp_nla_authenticate(struct xrdp_nla *self)
 	LHEXDUMP(0, (decryptedAuthInfo->data, decryptedAuthInfo->length));
 
 	// fill username and password for logon later.
-	self->sec_layer->rdp_layer->client_info.username
+
+	major_status = gss_release_cred(&minor_status, &cred);
+	if (GSS_ERROR(major_status))
+	{
+		cssp_gss_report_error(GSS_C_GSS_CODE, "gss_release_cred failed",
+					  major_status, minor_status);
+		return 1;
+	}
+
+	major_status = gss_delete_sec_context(&minor_status, &gss_ctx, GSS_C_NO_BUFFER);
+	if (GSS_ERROR(major_status))
+	{
+		cssp_gss_report_error(GSS_C_GSS_CODE, "gss_delete_sec_context failed",
+					  major_status, minor_status);
+		return 1;
+	}
 
     LLOGLN(10, ("     out xrdp_nla_authenticate"));
 
