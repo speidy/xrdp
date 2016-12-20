@@ -774,7 +774,15 @@ xrdp_caps_send_demand_active(struct xrdp_rdp *self)
     out_uint16_le(s, 0); /* Update capability */
     out_uint16_le(s, 0); /* Remote unshare capability */
     out_uint16_le(s, 0); /* Compression level */
-    out_uint16_le(s, 0); /* Pad */
+    out_uint8(s, 0); /* refreshRectSupport */
+    out_uint8(s, 0); /* suppressOutputSupport */
+
+    /* TS_VIRTUALCHANNEL_CAPABILITYSET */
+    caps_count++;
+    out_uint16_le(s, 0x014);
+    out_uint16_le(s, 0x0C);
+    out_uint32_le(s, 0x0);
+    out_uint32_le(s, 1600);
 
     /* Output bitmap capability set */
     caps_count++;
@@ -789,9 +797,10 @@ xrdp_caps_send_demand_active(struct xrdp_rdp *self)
     out_uint16_le(s, 0); /* Pad */
     out_uint16_le(s, 1); /* Allow resize */
     out_uint16_le(s, 1); /* bitmap compression */
-    out_uint16_le(s, 0); /* unknown */
-    out_uint16_le(s, 0); /* unknown */
-    out_uint16_le(s, 0); /* pad */
+    out_uint8(s, 0); /* highColorFlags */
+    out_uint8(s, 0); /* drawingFlags */
+    out_uint16_le(s, 0); /* multipleRectangleSupport */
+    out_uint16_le(s, 0); /* pad2octetsB */
 
     /* Output font capability set */
     caps_count++;
@@ -937,11 +946,11 @@ xrdp_caps_send_demand_active(struct xrdp_rdp *self)
     out_uint8(s, 3); /* NumIconCaches */
     out_uint16_le(s, 12); /* NumIconCacheEntries */
 
-    /* 6 - bitmap cache v3 codecid */
-    caps_count++;
-    out_uint16_le(s, 0x0006);
-    out_uint16_le(s, 5);
-    out_uint8(s, 0); /* client sets */
+//    /* 6 - bitmap cache v3 codecid */
+//    caps_count++;
+//    out_uint16_le(s, 0x0006);
+//    out_uint16_le(s, 5);
+//    out_uint8(s, 0); /* client sets */
 
     if (self->client_info.use_fast_path & FASTPATH_OUTPUT_SUPPORTED) /* fastpath output on */
     {
