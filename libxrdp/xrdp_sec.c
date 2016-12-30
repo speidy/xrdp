@@ -2285,11 +2285,11 @@ xrdp_sec_incoming(struct xrdp_sec *self)
 
         if (iso->selectedProtocol == PROTOCOL_HYBRID)
         {
-        	/* CredSSP */
-        	if (xrdp_nla_authenticate(self->nla_layer) != 0)
-			{
-        		return 1; /* error */
-			}
+            /* CredSSP */
+            if (xrdp_nla_authenticate(self->nla_layer) != 0)
+            {
+                return 1; /* error */
+            }
 
         }
 

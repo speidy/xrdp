@@ -578,8 +578,8 @@ xrdp_caps_process_confirm_active(struct xrdp_rdp *self, struct stream *s);
 /* xrdp_nla.c */
 struct blob
 {
-	int length;
-	unsigned char *data;
+    int length;
+    unsigned char *data;
 };
 
 /* nla */

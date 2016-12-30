@@ -96,31 +96,31 @@ libxrdp_get_pdu_bytes(const char *aheader)
         rv = (header[2] << 8) | header[3];
     }
     else if (header[0] == 0x30)
-	{
-		/* TSRequest (NLA) */
-		if (header[1] & 0x80)
-		{
-			if ((header[1] & ~(0x80)) == 1)
-			{
-				rv = header[2];
-				rv += 3;
-			}
-			else if ((header[1] & ~(0x80)) == 2)
-			{
-				rv = (header[2] << 8) | header[3];
-				rv += 4;
-			}
-			else
-			{
-				LLOGLN(0, ("libxrdp_get_pdu_bytes: Error reading TSRequest!"));
-			}
-		}
-		else
-		{
-			rv = header[1];
-			rv += 2;
-		}
-	}
+    {
+        /* TSRequest (NLA) */
+        if (header[1] & 0x80)
+        {
+            if ((header[1] & ~(0x80)) == 1)
+            {
+                rv = header[2];
+                rv += 3;
+            }
+            else if ((header[1] & ~(0x80)) == 2)
+            {
+                rv = (header[2] << 8) | header[3];
+                rv += 4;
+            }
+            else
+            {
+                LLOGLN(0, ("libxrdp_get_pdu_bytes: Error reading TSRequest!"));
+            }
+        }
+        else
+        {
+            rv = header[1];
+            rv += 2;
+        }
+    }
     else
     {
         /* Fast-Path */

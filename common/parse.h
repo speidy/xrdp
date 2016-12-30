@@ -461,8 +461,8 @@ do                                        \
 
 #define xstream_len(_s)               (int) ((_s)->p - (_s)->data)
 #define xstream_seek(_s, _len)        (_s)->p += (_len)
-#define xstream_get_left(_s)		  (_s->size - (_s->p - _s->data))
-#define xstream_rewind(_s,_offset) 	  (_s->p -= (_offset))
+#define xstream_get_left(_s)          (_s->size - (_s->p - _s->data))
+#define xstream_rewind(_s,_offset)    (_s->p -= (_offset))
 
 
 #endif

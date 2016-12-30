@@ -33,6 +33,9 @@ libcommon_la_SOURCES = \
   arch.h \
   base64.h \
   base64.c \
+  ber.c \
+  ber.h \
+  crc16.h \
   defines.h \
   fifo.c \
   fifo.h \
@@ -59,8 +62,6 @@ libcommon_la_SOURCES = \
   xrdp_client_info.h \
   xrdp_constants.h \
   xrdp_rail.h \
-  ber.c \
-  ber.h
 
 libcommon_la_LIBADD = \
   -lpthread \

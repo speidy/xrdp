@@ -447,7 +447,7 @@ int pa__init(pa_module *m) {
         if (!(u->thread = pa_thread_new(thread_func, u))) {
     #endif
     #else
-	if (!(u->thread = pa_thread_new(thread_func, u))) 
+    if (!(u->thread = pa_thread_new(thread_func, u)))
     #endif
         pa_log("Failed to create thread.");
         goto fail;

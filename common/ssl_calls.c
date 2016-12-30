@@ -884,8 +884,8 @@ ssl_tls_read(struct ssl_tls *tls, char *data, int length)
                 return 0;
 
             case SSL_ERROR_SYSCALL:
-            	perror("ssl_tls_read: SSL_ERROR_SYSCALL");
-            	/* fall through */
+                perror("ssl_tls_read: SSL_ERROR_SYSCALL");
+                /* fall through */
             default:
                 ssl_tls_print_error("SSL_read", tls->ssl, status);
                 status = -1;
