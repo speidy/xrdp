@@ -101,7 +101,13 @@ int DEFAULT_CC
 libxrdp_send_pointer(struct xrdp_session *session, int cache_idx,
                      char *data, char *mask, int x, int y, int bpp);
 int DEFAULT_CC
+libxrdp_send_pointer_ex(struct xrdp_session *session, int cache_idx,
+                        char *data, char *mask, int x, int y, int bpp,
+                        int width, int height);
+int DEFAULT_CC
 libxrdp_set_pointer(struct xrdp_session *session, int cache_idx);
+int DEFAULT_CC
+libxrdp_set_pointer_system(struct xrdp_session *session, int sys_type);
 int DEFAULT_CC
 libxrdp_orders_init(struct xrdp_session *session);
 int DEFAULT_CC

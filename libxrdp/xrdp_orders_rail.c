@@ -191,15 +191,18 @@ xrdp_orders_send_as_unicode(struct stream *s, const char *text)
     int str_chars;
     int index;
     int i32;
-    twchar wdst[256];
+    twchar *wdst;
 
-    str_chars = g_mbstowcs(wdst, text, 255);
-
+    wdst = (twchar *) g_malloc(sizeof(twchar) * 64 * 1024, 1);
+    if (wdst == 0)
+    {
+        return 1;
+    }
+    str_chars = g_mbstowcs(wdst, text, 2 * 1024);
     if (str_chars > 0)
     {
         i32 = str_chars * 2;
         out_uint16_le(s, i32);
-
         for (index = 0; index < str_chars; index++)
         {
             i32 = wdst[index];
@@ -210,7 +213,7 @@ xrdp_orders_send_as_unicode(struct stream *s, const char *text)
     {
         out_uint16_le(s, 0);
     }
-
+    g_free(wdst);
     return 0;
 }
 
@@ -256,6 +259,8 @@ xrdp_orders_send_window_new_update(struct xrdp_orders *self, int window_id,
     {
         /* titleInfo */
         num_chars = g_mbstowcs(0, window_state->title_info, 0);
+        num_chars = MIN(num_chars, 2 * 1024);
+        num_chars = MAX(num_chars, 0);
         order_size += 2 * num_chars + 2;
     }
 
@@ -331,12 +336,6 @@ xrdp_orders_send_window_new_update(struct xrdp_orders *self, int window_id,
         /* numVisibilityRects (2 bytes) */
         order_size += 2;
         order_size += 8 * window_state->num_visibility_rects;
-    }
-
-    if (order_size < 12)
-    {
-        /* no flags set */
-        return 0;
     }
 
     if (xrdp_orders_check(self, order_size) != 0)
@@ -532,6 +531,8 @@ xrdp_orders_send_notify_new_update(struct xrdp_orders *self,
     {
         /* ToolTip (variable) UNICODE_STRING */
         num_chars = g_mbstowcs(0, notify_state->tool_tip, 0);
+        num_chars = MIN(num_chars, 2 * 1024);
+        num_chars = MAX(num_chars, 0);
         order_size += 2 * num_chars + 2;
     }
 
@@ -540,9 +541,13 @@ xrdp_orders_send_notify_new_update(struct xrdp_orders *self,
         /* InfoTip (variable) TS_NOTIFY_ICON_INFOTIP */
         /* UNICODE_STRING */
         num_chars = g_mbstowcs(0, notify_state->infotip.title, 0);
+        num_chars = MIN(num_chars, 2 * 1024);
+        num_chars = MAX(num_chars, 0);
         order_size += 2 * num_chars + 2;
         /* UNICODE_STRING */
         num_chars = g_mbstowcs(0, notify_state->infotip.text, 0);
+        num_chars = MIN(num_chars, 2 * 1024);
+        num_chars = MAX(num_chars, 0);
         order_size += 2 * num_chars + 2;
         /* Timeout (4 bytes) */
         /* InfoFlags (4 bytes) */

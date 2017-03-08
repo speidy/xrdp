@@ -21,6 +21,7 @@
 #include "xrdp-color.h"
 #include "xrdp_rail.h"
 #include "log.h"
+#include "ssl_calls.h"
 #include <freerdp/settings.h>
 #include <X11/Xlib.h>
 
@@ -92,87 +93,55 @@ lxrdp_connect(struct mod *mod)
     LLOGLN(10, ("lxrdp_connect:"));
 
     ok = freerdp_connect(mod->inst);
-    LLOGLN(0, ("lxrdp_connect: freerdp_connect returned %d", ok));
+    log_message(LOG_LEVEL_INFO, "lxrdp_connect: freerdp_connect returned %d", ok);
 
     if (!ok)
     {
-        LLOGLN(0, ("Failure to connect"));
-#ifdef ERRORSTART
-
-        if (connectErrorCode != 0)
-        {
-            char buf[128];
-
-            if (connectErrorCode < ERRORSTART)
-            {
-                if (strerror_r(connectErrorCode, buf, 128) != 0)
-                {
-                    g_snprintf(buf, 128, "Errorcode from connect : %d", connectErrorCode);
-                }
-            }
-            else
-            {
-                switch (connectErrorCode)
-                {
-                    case PREECONNECTERROR:
-                        g_snprintf(buf, 128, "The error code from connect is "
-                                 "PREECONNECTERROR");
-                        break;
-                    case UNDEFINEDCONNECTERROR:
-                        g_snprintf(buf, 128, "The error code from connect is "
-                                 "UNDEFINEDCONNECTERROR");
-                        break;
-                    case POSTCONNECTERROR:
-                        g_snprintf(buf, 128, "The error code from connect is "
-                                 "POSTCONNECTERROR");
-                        break;
-                    case DNSERROR:
-                        g_snprintf(buf, 128, "The DNS system generated an error");
-                        break;
-                    case DNSNAMENOTFOUND:
-                        g_snprintf(buf, 128, "The DNS system could not find the "
-                                 "specified name");
-                        break;
-                    case CONNECTERROR:
-                        g_snprintf(buf, 128, "A general connect error was returned");
-                        break;
-                    case MCSCONNECTINITIALERROR:
-                        g_snprintf(buf, 128, "The error code from connect is "
-                                 "MCSCONNECTINITIALERROR");
-                        break;
-                    case TLSCONNECTERROR:
-                        g_snprintf(buf, 128, "Error in TLS handshake");
-                        break;
-                    case AUTHENTICATIONERROR:
-                        g_snprintf(buf, 128, "Authentication error check your password "
-                                 "and username");
-                        break;
-                    case INSUFFICIENTPRIVILEGESERROR:
-						g_snprintf(buf, 128, "Insufficent privileges on target server");
-						break;
-                    default:
-                        g_snprintf(buf, 128, "Unhandled Errorcode from connect : %d",
-                                 connectErrorCode);
-                        break;
-                }
-            }
-            log_message(LOG_LEVEL_INFO,buf);
-            mod->server_msg(mod, buf, 0);
-        }
-
-#endif
-        log_message(LOG_LEVEL_INFO, "freerdp_connect Failed to "
-                    "destination :%s:%d",
+        /* fetch internal error message */
+        tui32 err_code = freerdp_get_last_error(mod->inst->context);
+        char *err_name = g_strdup(freerdp_get_last_error_name(err_code));
+        char *err_string = g_strdup(freerdp_get_last_error_string(err_code));
+        log_message(LOG_LEVEL_ERROR,
+                    "Osirium: failed to connect to host: %s:%d\n"
+                    "Error Name: %s\n"
+                    "Error Description: %s",
                     mod->inst->settings->hostname,
-                    mod->inst->settings->port);
+                    mod->inst->settings->port,
+                    err_name,
+                    err_string);
+        mod->server_msg(mod, "Osirium: connection failed.", 0);
+        mod->server_msg(mod, "Hostname:", 0);
+        mod->server_msg(mod, mod->inst->settings->hostname, 0);
+        mod->server_msg(mod, "Error:", 0);
+        mod->server_msg(mod, err_string, 0);
+        g_free(err_name);
+        g_free(err_string);
         return 1;
     }
     else
     {
+        char password_sha1[20];
+        char password_sha1_text[256];
+        void *sha1;
+
         log_message(LOG_LEVEL_INFO, "freerdp_connect returned Success to "
                     "destination :%s:%d",
                     mod->inst->settings->hostname,
                     mod->inst->settings->port);
+        sha1 = ssl_sha1_info_create();
+        ssl_sha1_transform(sha1, mod->inst->settings->password, strlen(mod->inst->settings->password));
+        ssl_sha1_complete(sha1, password_sha1);
+        g_bytes_to_hexstr(password_sha1, 20, password_sha1_text, 256);
+        log_message(LOG_LEVEL_INFO, "  username %s password length %d password sha1 %s",
+                    mod->inst->settings->username,
+                    strlen(mod->inst->settings->password),
+                    password_sha1_text);
+        log_message(LOG_LEVEL_INFO, "  domain %s hostname %s port %d nla_security %d",
+                    mod->inst->settings->domain,
+                    mod->inst->settings->hostname,
+                    mod->inst->settings->port,
+                    mod->inst->settings->nla_security);
+        ssl_sha1_info_delete(sha1);
     }
 
     return 0;
@@ -1113,7 +1082,11 @@ static void DEFAULT_CC
 lfreerdp_pointer_system(rdpContext *context,
                         POINTER_SYSTEM_UPDATE *pointer_system)
 {
-    LLOGLN(0, ("lfreerdp_pointer_system: - no code here type value = %d",pointer_system->type));
+    struct mod *mod;
+
+    LLOGLN(10, ("lfreerdp_pointer_system:"));
+    mod = ((struct mod_context *)context)->modi;
+    mod->server_set_pointer_system(mod, pointer_system->type);
 }
 
 /******************************************************************************/
@@ -1141,6 +1114,22 @@ lfreerdp_get_pixel(void *bits, int width, int height, int bpp,
         shift = x % 8;
         pixel = (src8[start] & (0x80 >> shift)) != 0;
         return pixel ? 0xffffff : 0;
+    }
+    else if ((bpp == 15) || (bpp == 16))
+    {
+        src8 = (tui8 *)bits;
+        src8 += y * delta + x * 2;
+        pixel = ((short*)(src8))[0];
+        return pixel;
+    }
+    else if (bpp == 24)
+    {
+        src8 = (tui8 *)bits;
+        src8 += y * delta + x * 3;
+        pixel = src8[0];
+        pixel |= src8[1] << 8;
+        pixel |= src8[2] << 16;
+        return pixel;
     }
     else if (bpp == 32)
     {
@@ -1180,6 +1169,12 @@ lfreerdp_set_pixel(int pixel, void *bits, int width, int height, int bpp,
         {
             dst8[start] = dst8[start] & ~(0x80 >> shift);
         }
+    }
+    else if ((bpp == 15) || (bpp == 16))
+    {
+        dst8 = (tui8 *)bits;
+        dst8 += y * delta + x * 2;
+        ((short*)(dst8))[0] = pixel;
     }
     else if (bpp == 24)
     {
@@ -1235,8 +1230,15 @@ lfreerdp_pointer_new(rdpContext *context,
 {
     struct mod *mod;
     int index;
+    int jndex;
+    int kndex;
+    int pixel;
     int bytes_per_pixel;
     int bits_per_pixel;
+    int cx;
+    int cy;
+    int width;
+    int height;
     tui8 *dst;
     tui8 *src;
 
@@ -1256,42 +1258,62 @@ lfreerdp_pointer_new(rdpContext *context,
         LLOGLN(0, ("lfreerdp_pointer_new: pointer index too big"));
         return ;
     }
-    if (pointer_new->xorBpp == 1 &&
-        pointer_new->colorPtrAttr.width == 32 &&
-        pointer_new->colorPtrAttr.height == 32)
+    width = pointer_new->colorPtrAttr.width;
+    height = pointer_new->colorPtrAttr.height;
+    g_memset(mod->pointer_cache[index].data, 0, sizeof(mod->pointer_cache[index].data));
+    g_memset(mod->pointer_cache[index].mask, 0, sizeof(mod->pointer_cache[index].mask));
+    if (pointer_new->xorBpp == 1)
     {
         LLOGLN(10, ("lfreerdp_pointer_new:"));
         mod->pointer_cache[index].hotx = pointer_new->colorPtrAttr.xPos;
         mod->pointer_cache[index].hoty = pointer_new->colorPtrAttr.yPos;
         mod->pointer_cache[index].bpp = 0;
+        mod->pointer_cache[index].width = width;
+        mod->pointer_cache[index].height = height;
         dst = (tui8 *)(mod->pointer_cache[index].data);
-        dst += 32 * 32 * 3 - 32 * 3;
+        dst += width * height * 3 - width * 3;
         src = pointer_new->colorPtrAttr.xorMaskData;
-        lfreerdp_convert_color_image(dst, 32, 32, 24, 32 * -3,
-                                     src, 32, 32, 1, 32 / 8);
+        lfreerdp_convert_color_image(dst, width, height, 24, width * -3,
+                                     src, width, height, 1, width / 8);
         dst = (tui8 *)(mod->pointer_cache[index].mask);
-        dst += ( 32 * 32 / 8) - (32 / 8);
+        dst += (width * height / 8) - (width / 8);
         src = pointer_new->colorPtrAttr.andMaskData;
-        lfreerdp_convert_color_image(dst, 32, 32, 1, 32 / -8,
-                                     src, 32, 32, 1, 32 / 8);
+        lfreerdp_convert_color_image(dst, width, height, 1, width / -8,
+                                     src, width, height, 1, width / 8);
     }
-    else if(pointer_new->xorBpp >= 8 &&
-            pointer_new->colorPtrAttr.width == 32 &&
-            pointer_new->colorPtrAttr.height == 32)
+    else if (pointer_new->xorBpp >= 8)
     {
         bytes_per_pixel = (pointer_new->xorBpp + 7) / 8;
         bits_per_pixel = pointer_new->xorBpp;
-        LLOGLN(10, ("lfreerdp_pointer_new: bpp %d Bpp %d", bits_per_pixel,
-               bytes_per_pixel));
+        LLOGLN(10, ("lfreerdp_pointer_new: bytes_per_pixel %d bits_per_pixel %d",
+               bytes_per_pixel, bits_per_pixel));
         mod->pointer_cache[index].hotx = pointer_new->colorPtrAttr.xPos;
         mod->pointer_cache[index].hoty = pointer_new->colorPtrAttr.yPos;
         mod->pointer_cache[index].bpp = bits_per_pixel;
-        memcpy(mod->pointer_cache[index].data,
-               pointer_new->colorPtrAttr.xorMaskData,
-               32 * 32 * bytes_per_pixel);
-        memcpy(mod->pointer_cache[index].mask,
-               pointer_new->colorPtrAttr.andMaskData,
-               32 * (32 / 8));
+        mod->pointer_cache[index].width = width;
+        mod->pointer_cache[index].height = height;
+        cx = width;
+        cy = height;
+        for (jndex = 0; jndex < cy; jndex++)
+        {
+            for (kndex = 0; kndex < cx; kndex++)
+            {
+                pixel = lfreerdp_get_pixel(pointer_new->colorPtrAttr.xorMaskData,
+                                           width, height, bits_per_pixel,
+                                           width * bytes_per_pixel,
+                                           kndex, jndex);
+                lfreerdp_set_pixel(pixel, mod->pointer_cache[index].data,
+                                   width, height, bits_per_pixel,
+                                   width * bytes_per_pixel,
+                                   kndex, jndex);
+                pixel = lfreerdp_get_pixel(pointer_new->colorPtrAttr.andMaskData,
+                                           width, height, 1, (width + 7) / 8,
+                                           kndex, jndex);
+                lfreerdp_set_pixel(pixel, mod->pointer_cache[index].mask,
+                                   width, height, 1, (width + 7) / 8,
+                                   kndex, jndex);
+            }
+        }
     }
     else
     {
@@ -1300,11 +1322,13 @@ lfreerdp_pointer_new(rdpContext *context,
                    pointer_new->colorPtrAttr.height,index));
     }
 
-    mod->server_set_pointer_ex(mod, mod->pointer_cache[index].hotx,
-                               mod->pointer_cache[index].hoty,
-                               mod->pointer_cache[index].data,
-                               mod->pointer_cache[index].mask,
-                               mod->pointer_cache[index].bpp);
+    mod->server_set_pointer_large(mod, mod->pointer_cache[index].hotx,
+                                  mod->pointer_cache[index].hoty,
+                                  mod->pointer_cache[index].data,
+                                  mod->pointer_cache[index].mask,
+                                  mod->pointer_cache[index].bpp,
+                                  mod->pointer_cache[index].width,
+                                  mod->pointer_cache[index].height);
 
     free(pointer_new->colorPtrAttr.xorMaskData);
     pointer_new->colorPtrAttr.xorMaskData = 0;
@@ -1324,11 +1348,13 @@ lfreerdp_pointer_cached(rdpContext *context,
     mod = ((struct mod_context *)context)->modi;
     index = pointer_cached->cacheIndex;
     LLOGLN(10, ("lfreerdp_pointer_cached:%d", index));
-    mod->server_set_pointer_ex(mod, mod->pointer_cache[index].hotx,
-                               mod->pointer_cache[index].hoty,
-                               mod->pointer_cache[index].data,
-                               mod->pointer_cache[index].mask,
-                               mod->pointer_cache[index].bpp);
+    mod->server_set_pointer_large(mod, mod->pointer_cache[index].hotx,
+                                  mod->pointer_cache[index].hoty,
+                                  mod->pointer_cache[index].data,
+                                  mod->pointer_cache[index].mask,
+                                  mod->pointer_cache[index].bpp,
+                                  mod->pointer_cache[index].width,
+                                  mod->pointer_cache[index].height);
 }
 
 /******************************************************************************/
@@ -1343,7 +1369,7 @@ static void DEFAULT_CC
 lfreerdp_polygon_sc(rdpContext* context, POLYGON_SC_ORDER* polygon_sc)
 {
     struct mod *mod;
-    int i, npoints;
+    int i;
     XPoint points[4];
     int fgcolor;
     int server_bpp, client_bpp;
@@ -1393,8 +1419,6 @@ lfreerdp_polygon_sc(rdpContext* context, POLYGON_SC_ORDER* polygon_sc)
 static void DEFAULT_CC
 lfreerdp_synchronize(rdpContext* context)
 {
-    struct mod *mod;
-    mod = ((struct mod_context *)context)->modi;
     LLOGLN(12, ("lfreerdp_synchronize received - not handled"));
 }
 
@@ -1497,11 +1521,12 @@ lfreerdp_pre_connect(freerdp *instance)
         instance->settings->remote_app = 1;
         instance->settings->rail_langbar_supported = 1;
         instance->settings->workarea = 1;
-        instance->settings->performance_flags = PERF_DISABLE_WALLPAPER | PERF_DISABLE_FULLWINDOWDRAG;
+        instance->settings->performance_flags = mod->client_info.rdp5_performanceflags;
         instance->settings->num_icon_caches = mod->client_info.wnd_num_icon_caches;
         instance->settings->num_icon_cache_entries = mod->client_info.wnd_num_icon_cache_entries;
-
-
+        instance->settings->kbd_layout = mod->client_info.keylayout;
+        instance->settings->kbd_type = mod->client_info.keyboard_type;
+        instance->settings->kbd_subtype = mod->client_info.keyboard_subtype;
     }
     else
     {
@@ -1558,6 +1583,12 @@ lfreerdp_pre_connect(freerdp *instance)
     else
     {
         instance->settings->nla_security = 0;
+    }
+
+    if ((mod->client_info.pointer_flags & 4) == 0)
+    {
+        /* client goes not support large pointers */
+        instance->settings->large_pointer = 0;
     }
 
     return 1;
