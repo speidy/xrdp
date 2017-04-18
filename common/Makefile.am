@@ -41,6 +41,9 @@ libcommon_la_SOURCES = \
   fifo.h \
   file.c \
   file.h \
+  file_loc.h \
+  gss_calls.c \
+  gss_calls.h \
   list.c \
   list.h \
   list16.c \
@@ -67,3 +70,6 @@ libcommon_la_LIBADD = \
   -lpthread \
   $(OPENSSL_LIBS) \
   $(DLOPEN_LIBS)
+
+#TODO: add to configure
+libcommon_la_LIBADD += -lgssapi_krb5

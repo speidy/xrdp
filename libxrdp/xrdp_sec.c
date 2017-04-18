@@ -2285,12 +2285,14 @@ xrdp_sec_incoming(struct xrdp_sec *self)
 
         if (iso->selectedProtocol == PROTOCOL_HYBRID)
         {
-            /* CredSSP */
-            if (xrdp_nla_authenticate(self->nla_layer) != 0)
+            DEBUG((" in xrdp_sec_incoming: init tls+credssp security"));
+            /* Handle CredSSP authentication */
+            if (self->rdp_layer->session->callback != 0)
             {
-                return 1; /* error */
+                /* 0x5558- CredSSP auth         */
+                /* call to xrdp_wm.c : callback */
+                self->rdp_layer->session->callback(self->rdp_layer->session->id, 0x5558, 0, 0, 0, 0);
             }
-
         }
 
     }

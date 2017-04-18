@@ -21,8 +21,6 @@
 #define __BER_H
 
 #include "arch.h"
-#include "parse.h"
-
 
 /* BER type */
 
@@ -83,8 +81,10 @@ int ber_write_integer(struct stream *s, tui32 value);
 int ber_read_integer_length(struct stream *s, int* length);
 int ber_sizeof_integer(tui32 value);
 
-#define ber_sizeof_sequence_octet_string(length) ber_sizeof_contextual_tag(ber_sizeof_octet_string(length)) + ber_sizeof_octet_string(length)
-#define ber_write_sequence_octet_string(stream, context, value, length) ber_write_contextual_tag(stream, context, ber_sizeof_octet_string(length), 1) + ber_write_octet_string(stream, value, length)
+#define ber_sizeof_sequence_octet_string(length) \
+    ber_sizeof_contextual_tag(ber_sizeof_octet_string(length)) + ber_sizeof_octet_string(length)
+#define ber_write_sequence_octet_string(stream, context, value, length) \
+    ber_write_contextual_tag(stream, context, ber_sizeof_octet_string(length), 1) + ber_write_octet_string(stream, value, length)
 
 
 #endif /* __BER_H */

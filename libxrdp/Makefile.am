@@ -38,9 +38,6 @@ LIBXRDP_EXTRA_LIBS += -ljpeg
 endif
 endif
 
-# TODO: add configure.am flag
-LIBXRDP_EXTRA_LIBS += -lgssapi_krb5
-
 module_LTLIBRARIES = \
   libxrdp.la
 
@@ -52,6 +49,7 @@ libxrdp_la_SOURCES = \
   xrdp_bitmap_compress.c \
   xrdp_caps.c \
   xrdp_channel.c \
+  xrdp_credssp.c \
   xrdp_fastpath.c \
   xrdp_iso.c \
   xrdp_jpeg_compress.c \
@@ -61,8 +59,7 @@ libxrdp_la_SOURCES = \
   xrdp_orders_rail.c \
   xrdp_orders_rail.h \
   xrdp_rdp.c \
-  xrdp_sec.c \
-  xrdp_nla.c
+  xrdp_sec.c
 
 libxrdp_la_LIBADD = \
   $(top_builddir)/common/libcommon.la \

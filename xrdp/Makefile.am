@@ -58,7 +58,8 @@ xrdp_SOURCES = \
   xrdp_process.c \
   xrdp_region.c \
   xrdp_types.h \
-  xrdp_wm.c
+  xrdp_wm.c \
+  xrdp_auth.c
 
 xrdp_LDADD = \
   $(top_builddir)/common/libcommon.la \

@@ -16,9 +16,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#include "ber.h"
+#include "arch.h"
+#include "parse.h"
 #include "os_calls.h"
+#include "ber.h"
 
 int ber_read_length(struct stream *s, int *length)
 {
@@ -418,7 +419,7 @@ int ber_read_integer(struct stream *s, tui32 *value)
         return 0;
     }
 
-    if (value == NULL)
+    if (value == 0)
     {
         if (xstream_get_left(s) < length)
         {

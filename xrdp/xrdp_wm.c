@@ -1844,6 +1844,10 @@ callback(intptr_t id, int msg, intptr_t param1, intptr_t param2,
             //g_writeln("callback: frame ack %d", param1);
             xrdp_mm_frame_ack(wm->mm, param1);
             break;
+        case 0x5558:
+            g_writeln("callback: do credssp auth");
+            xrdp_nla_authenticate(self);
+            break;
     }
     return rv;
 }
