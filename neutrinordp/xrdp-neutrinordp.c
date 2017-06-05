@@ -1524,9 +1524,6 @@ lfreerdp_pre_connect(freerdp *instance)
         instance->settings->performance_flags = mod->client_info.rdp5_performanceflags;
         instance->settings->num_icon_caches = mod->client_info.wnd_num_icon_caches;
         instance->settings->num_icon_cache_entries = mod->client_info.wnd_num_icon_cache_entries;
-        instance->settings->kbd_layout = mod->client_info.keylayout;
-        instance->settings->kbd_type = mod->client_info.keyboard_type;
-        instance->settings->kbd_subtype = mod->client_info.keyboard_subtype;
     }
     else
     {
@@ -1536,6 +1533,11 @@ lfreerdp_pre_connect(freerdp *instance)
                 PERF_DISABLE_THEMING;
                 // | PERF_DISABLE_CURSOR_SHADOW | PERF_DISABLE_CURSORSETTINGS;
     }
+
+    instance->settings->kbd_layout = mod->client_info.keylayout;
+    instance->settings->kbd_type = mod->client_info.keyboard_type;
+    instance->settings->kbd_subtype = mod->client_info.keyboard_subtype;
+
     instance->settings->compression = 0;
     instance->settings->ignore_certificate = 1;
 
