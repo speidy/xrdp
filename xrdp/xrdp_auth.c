@@ -20,6 +20,9 @@
  * [MS-CSSP] https://msdn.microsoft.com/en-us/library/cc226764.aspx
  */
 
+#if defined(HAVE_CONFIG_H)
+#include <config_ac.h>
+#endif
 
 #define LOG_LEVEL 11
 #define LLOG(_level, _args) \
@@ -44,7 +47,7 @@ static gss_OID_desc g_ntlmsspOID =
 
 
 /*****************************************************************************/
-int APP_CC
+int
 xrdp_nla_authenticate(struct xrdp_nla *self)
 {
     LLOGLN(10, ("     in xrdp_nla_authenticate"));

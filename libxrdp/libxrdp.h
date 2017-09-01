@@ -592,11 +592,11 @@ struct xrdp_nla
     struct blob *authInfo;
     struct blob *pubKeyAuth;
 };
-struct xrdp_nla *APP_CC
+struct xrdp_nla *
 xrdp_nla_create(struct xrdp_sec *owner, struct trans *trans);
-void APP_CC
+void
 xrdp_nla_delete(struct xrdp_nla *self);
-int APP_CC
+int
 xrdp_nla_authenticate(struct xrdp_nla *self);
 
 

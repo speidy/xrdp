@@ -16,6 +16,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#if defined(HAVE_CONFIG_H)
+#include <config_ac.h>
+#endif
+
 #include "arch.h"
 #include "parse.h"
 #include "os_calls.h"

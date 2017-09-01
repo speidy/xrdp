@@ -20,8 +20,6 @@
 #ifndef __BER_H
 #define __BER_H
 
-#include "arch.h"
-
 /* BER type */
 
 /* Class - bits 8 and 7 */

@@ -19,10 +19,13 @@
  *
  * [MS-CSSP] https://msdn.microsoft.com/en-us/library/cc226764.aspx
  */
-
+#if defined(HAVE_CONFIG_H)
+#include <config_ac.h>
+#endif
 
 #include "libxrdp.h"
 #include "log.h"
+#include "ber.h"
 
 #define LOG_LEVEL 11
 #define LLOG(_level, _args) \
@@ -34,13 +37,13 @@
 
 
 /*****************************************************************************/
-struct xrdp_nla *APP_CC
+struct xrdp_nla *
 xrdp_nla_create(struct xrdp_sec *owner, struct trans *trans)
 {
     struct xrdp_nla *self;
 
     LLOGLN(10, ("   in xrdp_nla_create"));
-    self = (struct xrdp_nla *) g_malloc(sizeof(struct xrdp_nla), 1);
+    self = g_new0(struct xrdp_nla, 1);
     self->sec_layer = owner;
     self->trans = trans;
     LLOGLN(10, ("   out xrdp_nla_create"));
@@ -48,7 +51,7 @@ xrdp_nla_create(struct xrdp_sec *owner, struct trans *trans)
 }
 
 /*****************************************************************************/
-void APP_CC
+void
 xrdp_nla_delete(struct xrdp_nla *self)
 {
     if (self == 0)
@@ -103,7 +106,7 @@ xrdp_nla_free_blob(struct blob *b)
 
 
 /*****************************************************************************/
-int APP_CC
+int
 xrdp_nla_recv_tsrequest(struct xrdp_nla *self)
 {
     LLOGLN(10, ("   in xrdp_nla_recv_tsrequest"));
