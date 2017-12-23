@@ -698,6 +698,12 @@ xrdp_sec_process_logon_info(struct xrdp_sec *self, struct stream *s)
         }
     }
 
+    if (flags & RDP_LOGON_RAIL)
+    {
+        DEBUG(("flag RDP_LOGON_RAIL found"));
+        self->rdp_layer->client_info.rdp_rail_session = 1;        
+    }
+
     if (!s_check_rem(s, 2))
     {
         return 1;
