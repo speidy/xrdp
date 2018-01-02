@@ -1518,7 +1518,7 @@ lfreerdp_pre_connect(freerdp *instance)
         LLOGLN(10, ("Special PerformanceFlags changed"));
         instance->settings->performance_flags = PERF_DISABLE_WALLPAPER |
                 PERF_DISABLE_FULLWINDOWDRAG | PERF_DISABLE_MENUANIMATIONS |
-                PERF_DISABLE_THEMING;
+                PERF_DISABLE_THEMING | PERF_ENABLE_FONT_SMOOTHING;
                 // | PERF_DISABLE_CURSOR_SHADOW | PERF_DISABLE_CURSORSETTINGS;
     }
 
