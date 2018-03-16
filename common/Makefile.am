@@ -64,7 +64,7 @@ libcommon_la_SOURCES = \
   $(PIXMAN_SOURCES) \
   xrdp_client_info.h \
   xrdp_constants.h \
-  xrdp_rail.h \
+  xrdp_rail.h
 
 libcommon_la_LIBADD = \
   -lpthread \
