@@ -636,6 +636,23 @@ unicode_in(struct stream *s, int uni_len, char *dst, int dst_len)
 }
 
 /*****************************************************************************/
+static int APP_CC
+xrdp_sec_read_client_timezone_info(struct stream *s, struct timezone_info *tz)
+{
+    in_uint32_le(s, tz->bias);
+    unicode_in(s, 2 * sizeof(tz->standard_name) - 2, tz->standard_name,
+               sizeof(tz->standard_name));
+    in_uint8a(s, &tz->standard_date, sizeof(tz->standard_date));
+    in_uint32_le(s, tz->standard_bias);
+    unicode_in(s, 2 * sizeof(tz->daylight_name) - 2, tz->daylight_name,
+               sizeof(tz->daylight_name));
+    in_uint8a(s, &tz->daylight_date, sizeof(tz->daylight_date));
+    in_uint32_le(s, tz->daylight_bias);
+
+    return 0;
+}
+
+/*****************************************************************************/
 /* returns error */
 static int APP_CC
 xrdp_sec_process_logon_info(struct xrdp_sec *self, struct stream *s)
@@ -648,7 +665,6 @@ xrdp_sec_process_logon_info(struct xrdp_sec *self, struct stream *s)
     int len_directory = 0;
     int len_ip = 0;
     int len_dll = 0;
-    int tzone = 0;
     char tmpdata[256];
 
     /* initialize (zero out) local variables */
@@ -833,16 +849,17 @@ xrdp_sec_process_logon_info(struct xrdp_sec *self, struct stream *s)
         {
             return 1;
         }
-        if (!s_check_rem(s, 4 + 62 + 22 + 62 + 26 + 4))
+        if (!s_check_rem(s, 172))                           /* clientTimeZone */
         {
             return 1;
         }
-        in_uint32_le(s, tzone);                             /* len of timezone */
-        in_uint8s(s, 62);                                   /* skip */
-        in_uint8s(s, 22);                                   /* skip misc. */
-        in_uint8s(s, 62);                                   /* skip */
-        in_uint8s(s, 26);                                   /* skip stuff */
-        in_uint32_le(s, self->rdp_layer->client_info.rdp5_performanceflags);
+        xrdp_sec_read_client_timezone_info(s, &self->rdp_layer->client_info.timezone_info);
+        if (!s_check_rem(s, 4 + 4))
+        {
+            return 1;
+        }
+        in_uint8s(s, 4);                                    /* skip stuff */
+        in_uint32_le(s, self->rdp_layer->client_info.rdp5_performanceflags); /* performanceFlags */
     }
 
     DEBUG(("out xrdp_sec_process_logon_info"));

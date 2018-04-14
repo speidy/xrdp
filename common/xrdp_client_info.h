@@ -30,6 +30,31 @@ struct monitor_info
   int is_primary;
 };
 
+/* TS_SYSTEM_TIME */
+struct system_time
+{
+  unsigned short year;
+  unsigned short month;
+  unsigned short day_of_week;
+  unsigned short day;
+  unsigned short hour;
+  unsigned short minute;
+  unsigned short second;
+  unsigned short milliseconds;
+};
+
+/* TS_TIME_ZONE_INFORMATION */
+struct timezone_info
+{
+  unsigned int        bias;
+  char                standard_name[32];
+  struct system_time  standard_date;
+  unsigned int        standard_bias;
+  char                daylight_name[32];
+  struct system_time  daylight_date;
+  unsigned int        daylight_bias;
+};
+
 struct xrdp_client_info
 {
   int size; /* bytes for this structure */
@@ -145,6 +170,7 @@ struct xrdp_client_info
   int use_osirium_preamble;
   char *osirium_preamble_buffer;
 
+  struct timezone_info timezone_info;
 };
 
 #endif
