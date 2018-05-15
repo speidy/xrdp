@@ -93,105 +93,43 @@ lxrdp_connect(struct mod *mod)
     LLOGLN(10, ("lxrdp_connect:"));
 
     ok = freerdp_connect(mod->inst);
-    LLOGLN(0, ("lxrdp_connect: freerdp_connect returned %d", ok));
+    log_message(LOG_LEVEL_INFO, "lxrdp_connect: freerdp_connect returned %d", ok);
 
     if (!ok)
     {
-        LLOGLN(0, ("Failure to connect"));
-#ifdef ERRORSTART
-
-        if (connectErrorCode != 0)
-        {
-            char buf[128];
-
-            if (connectErrorCode < ERRORSTART)
-            {
-                if (strerror_r(connectErrorCode, buf, 128) != 0)
-                {
-                    g_snprintf(buf, 128, "Errorcode from connect : %d", connectErrorCode);
-                }
-            }
-            else
-            {
-                switch (connectErrorCode)
-                {
-                    case PREECONNECTERROR:
-                        g_snprintf(buf, 128, "The error code from connect is "
-                                 "PREECONNECTERROR");
-                        break;
-                    case UNDEFINEDCONNECTERROR:
-                        g_snprintf(buf, 128, "The error code from connect is "
-                                 "UNDEFINEDCONNECTERROR");
-                        break;
-                    case POSTCONNECTERROR:
-                        g_snprintf(buf, 128, "The error code from connect is "
-                                 "POSTCONNECTERROR");
-                        break;
-                    case DNSERROR:
-                        g_snprintf(buf, 128, "The DNS system generated an error");
-                        break;
-                    case DNSNAMENOTFOUND:
-                        g_snprintf(buf, 128, "The DNS system could not find the "
-                                 "specified name");
-                        break;
-                    case CONNECTERROR:
-                        g_snprintf(buf, 128, "A general connect error was returned");
-                        break;
-                    case MCSCONNECTINITIALERROR:
-                        g_snprintf(buf, 128, "The error code from connect is "
-                                 "MCSCONNECTINITIALERROR");
-                        break;
-                    case TLSCONNECTERROR:
-                        g_snprintf(buf, 128, "Error in TLS handshake");
-                        break;
-                    case AUTHENTICATIONERROR:
-                        g_snprintf(buf, 128, "Authentication error check your password "
-                                 "and username");
-                        break;
-                    case INSUFFICIENTPRIVILEGESERROR:
-						g_snprintf(buf, 128, "Insufficent privileges on target server");
-						break;
-                    default:
-                        g_snprintf(buf, 128, "Unhandled Errorcode from connect : %d",
-                                 connectErrorCode);
-                        break;
-                }
-            }
-            log_message(LOG_LEVEL_INFO,buf);
-            mod->server_msg(mod, buf, 0);
-        }
-
-#endif
-        log_message(LOG_LEVEL_INFO, "freerdp_connect Failed to "
-                    "destination :%s:%d",
+        /* fetch internal error message */
+        tui32 err_code = freerdp_get_last_error(mod->inst->context);
+        char *err_name = g_strdup(freerdp_get_last_error_name(err_code));
+        char *err_string = g_strdup(freerdp_get_last_error_string(err_code));
+        log_message(LOG_LEVEL_ERROR,
+                    "Osirium: failed to connect to host: %s:%d\n"
+                    "Error Name: %s\n"
+                    "Error Description: %s",
                     mod->inst->settings->hostname,
-                    mod->inst->settings->port);
+                    mod->inst->settings->port,
+                    err_name,
+                    err_string);
+        mod->server_msg(mod, "Osirium: connection failed.", 0);
+        mod->server_msg(mod, "Hostname:", 0);
+        mod->server_msg(mod, mod->inst->settings->hostname, 0);
+        mod->server_msg(mod, "Error:", 0);
+        mod->server_msg(mod, err_string, 0);
+        g_free(err_name);
+        g_free(err_string);
         return 1;
     }
     else
     {
-        char password_sha1[20];
-        char password_sha1_text[256];
-        void *sha1;
-
         log_message(LOG_LEVEL_INFO, "freerdp_connect returned Success to "
                     "destination :%s:%d",
                     mod->inst->settings->hostname,
                     mod->inst->settings->port);
-        sha1 = ssl_sha1_info_create();
-        ssl_sha1_transform(sha1, mod->inst->settings->password, strlen(mod->inst->settings->password));
-        ssl_sha1_complete(sha1, password_sha1);
-        g_bytes_to_hexstr(password_sha1, 20, password_sha1_text, 256);
-        log_message(LOG_LEVEL_INFO, "  username %s password length %d password sha1 %s",
+        log_message(LOG_LEVEL_INFO, "  username %s domain %s hostname %s port %d nla_security %d",
                     mod->inst->settings->username,
-                    strlen(mod->inst->settings->password),
-                    password_sha1_text);
-        log_message(LOG_LEVEL_INFO, "  domain %s hostname %s port %d nla_security %d",
                     mod->inst->settings->domain,
                     mod->inst->settings->hostname,
                     mod->inst->settings->port,
                     mod->inst->settings->nla_security);
-        ssl_sha1_info_delete(sha1);
     }
 
     return 0;
@@ -1419,7 +1357,7 @@ static void DEFAULT_CC
 lfreerdp_polygon_sc(rdpContext* context, POLYGON_SC_ORDER* polygon_sc)
 {
     struct mod *mod;
-    int i, npoints;
+    int i;
     XPoint points[4];
     int fgcolor;
     int server_bpp, client_bpp;
@@ -1469,8 +1407,6 @@ lfreerdp_polygon_sc(rdpContext* context, POLYGON_SC_ORDER* polygon_sc)
 static void DEFAULT_CC
 lfreerdp_synchronize(rdpContext* context)
 {
-    struct mod *mod;
-    mod = ((struct mod_context *)context)->modi;
     LLOGLN(12, ("lfreerdp_synchronize received - not handled"));
 }
 
@@ -1567,27 +1503,28 @@ lfreerdp_pre_connect(freerdp *instance)
     instance->settings->password = g_strdup(mod->password);
     instance->settings->domain = g_strdup(mod->domain);
 
-    if (mod->client_info.rail_support_level > 0)
+    if (mod->client_info.rdp_rail_session == 1)
     {
-        LLOGLN(0, ("Railsupport !!!!!!!!!!!!!!!!!!"));
+        LLOGLN(0, ("Client requested RAIL session"));
         instance->settings->remote_app = 1;
         instance->settings->rail_langbar_supported = 1;
         instance->settings->workarea = 1;
         instance->settings->performance_flags = mod->client_info.rdp5_performanceflags;
         instance->settings->num_icon_caches = mod->client_info.wnd_num_icon_caches;
         instance->settings->num_icon_cache_entries = mod->client_info.wnd_num_icon_cache_entries;
-        instance->settings->kbd_layout = mod->client_info.keylayout;
-        instance->settings->kbd_type = mod->client_info.keyboard_type;
-        instance->settings->kbd_subtype = mod->client_info.keyboard_subtype;
     }
     else
     {
         LLOGLN(10, ("Special PerformanceFlags changed"));
         instance->settings->performance_flags = PERF_DISABLE_WALLPAPER |
                 PERF_DISABLE_FULLWINDOWDRAG | PERF_DISABLE_MENUANIMATIONS |
-                PERF_DISABLE_THEMING;
+                PERF_DISABLE_THEMING | PERF_ENABLE_FONT_SMOOTHING;
                 // | PERF_DISABLE_CURSOR_SHADOW | PERF_DISABLE_CURSORSETTINGS;
     }
+  
+    instance->settings->kbd_layout = mod->client_info.keylayout;
+    instance->settings->kbd_type = mod->client_info.keyboard_type;
+    instance->settings->kbd_subtype = mod->client_info.keyboard_subtype;
 
     /* client time zone */
     g_memcpy(instance->settings->client_time_zone, &mod->client_info.timezone_info,

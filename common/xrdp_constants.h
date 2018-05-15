@@ -274,6 +274,7 @@
 #define RDP_COMPRESSION                0x0080
 #define RDP_LOGON_BLOB                 0x0100
 #define RDP_LOGON_LEAVE_AUDIO          0x2000
+#define RDP_LOGON_RAIL                 0x8000
 
 #define RDP5_DISABLE_NOTHING           0x00
 #define RDP5_NO_WALLPAPER              0x01
