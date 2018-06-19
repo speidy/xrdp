@@ -18,14 +18,9 @@
  * gssapi calls
  */
 
-
-#ifndef COMMON_GSS_CALLS_H_
-#define COMMON_GSS_CALLS_H_
+#ifndef GSS_CALLS_H
+#define GSS_CALLS_H
 
 int cssp_gss_mech_available(gss_OID mech);
 
-
-
-
-
-#endif /* COMMON_GSS_CALLS_H_ */
+#endif /* GSS_CALLS_H */

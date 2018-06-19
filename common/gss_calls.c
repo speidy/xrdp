@@ -17,11 +17,13 @@
  *
  * gssapi calls
  */
+
 #if defined(HAVE_CONFIG_H)
 #include <config_ac.h>
 #endif
 
 #include <gssapi/gssapi.h>
+
 #include "arch.h"
 #include "parse.h"
 #include "os_calls.h"
@@ -334,5 +336,3 @@ xrdp_nla_gss_wrap(gss_ctx_id_t *ctx, struct blob *in, struct blob **out)
 
     return 1;
 }
-
-
