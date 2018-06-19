@@ -22,6 +22,8 @@
 #include <config_ac.h>
 #endif
 
+#include <common/ber.h> /* for BER constants */
+
 #include "libxrdp.h"
 #include "log.h"
 
@@ -883,7 +885,7 @@ xrdp_mcs_send_connect_response(struct xrdp_mcs *self)
     //TODO: we should calculate the whole length include MCS_CONNECT_RESPONSE
     xrdp_mcs_ber_out_header(self, s, MCS_CONNECT_RESPONSE,
             data_len > 0x80 ? data_len + 38 : data_len + 36);
-    xrdp_mcs_ber_out_header(self, s, BER_TAG_RESULT, 1);
+    xrdp_mcs_ber_out_header(self, s, BER_TAG_ENUMERATED, 1);
     out_uint8(s, 0);
     xrdp_mcs_ber_out_header(self, s, BER_TAG_INTEGER, 1);
     out_uint8(s, 0);

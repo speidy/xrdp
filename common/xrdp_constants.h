@@ -642,10 +642,6 @@
 #define MCS_CONNECT_INITIAL            0x7f65
 #define MCS_CONNECT_RESPONSE           0x7f66
 
-#define BER_TAG_BOOLEAN                1
-#define BER_TAG_INTEGER                2
-#define BER_TAG_OCTET_STRING           4
-#define BER_TAG_RESULT                 10
 #define MCS_TAG_DOMAIN_PARAMS          0x30
 
 #define MCS_GLOBAL_CHANNEL             1003
