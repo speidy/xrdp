@@ -4,6 +4,12 @@ else
   PIXMAN_SOURCES = pixman-region16.c pixman-region.h
 endif
 
+if XRDP_NLA_AUTH
+  GSSCALLS_SOURCES = gss_calls.c gss_calls.h
+else
+  GSSCALLS_SOURCES =
+endif
+
 EXTRA_DIST = pixman-region.c
 
 include_HEADERS = \
@@ -24,7 +30,7 @@ if XRDP_DEBUG
 AM_CPPFLAGS += -DXRDP_DEBUG
 endif
 
-AM_CFLAGS = $(OPENSSL_CFLAGS)
+AM_CFLAGS = $(OPENSSL_CFLAGS) $(GSSAPI_CFLAGS)
 
 module_LTLIBRARIES = \
   libcommon.la
@@ -42,8 +48,6 @@ libcommon_la_SOURCES = \
   file.c \
   file.h \
   file_loc.h \
-  gss_calls.c \
-  gss_calls.h \
   list.c \
   list.h \
   list16.c \
@@ -64,12 +68,11 @@ libcommon_la_SOURCES = \
   $(PIXMAN_SOURCES) \
   xrdp_client_info.h \
   xrdp_constants.h \
-  xrdp_rail.h
+  xrdp_rail.h \
+  $(GSSCALLS_SOURCES)
 
 libcommon_la_LIBADD = \
   -lpthread \
   $(OPENSSL_LIBS) \
-  $(DLOPEN_LIBS)
-
-#TODO: add to configure
-libcommon_la_LIBADD += -lgssapi_krb5
+  $(DLOPEN_LIBS) \
+  $(GSSAPI_LIBS)

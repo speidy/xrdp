@@ -150,6 +150,11 @@ AC_ARG_ENABLE(rfxcodec, AS_HELP_STRING([--disable-rfxcodec],
               [], [enable_rfxcodec=yes])
 AM_CONDITIONAL(XRDP_RFXCODEC, [test x$enable_rfxcodec = xyes])
 
+AC_ARG_ENABLE(nla, AS_HELP_STRING([--enable-nla],
+              [Enable Network Level Authentication using GSS-API (default: no)]),
+              [], [enable_nla=no])
+AM_CONDITIONAL(XRDP_NLA_AUTH, [test x$enable_nla = xyes])
+
 # Don't fail without working nasm if rfxcodec is not enabled
 if test "x$enable_rfxcodec" != xyes; then
   with_simd=no
@@ -303,6 +308,12 @@ else
 fi
 fi
 
+# checking for nla (gssapi)
+if test "x$enable_nla" = "xyes"; then
+  PKG_CHECK_MODULES([GSSAPI], [mit-krb5-gssapi >= 1.8.0], [],
+    [AC_MSG_ERROR([please install MIT krb5 libs, i.e.: libkrb5-dev or krb5-libs])])
+fi
+
 AC_PATH_XTRA
 if test "x$no_x" == "xyes"; then
   AC_MSG_ERROR([please install libx11-dev or libX11-devel])
@@ -375,6 +386,7 @@ AC_OUTPUT
 echo ""
 echo "xrdp will be compiled with:"
 echo ""
+echo "  nla auth        $enable_nla"
 echo "  mp3lame         $enable_mp3lame"
 echo "  opus            $enable_opus"
 echo "  fdkaac          $enable_fdkaac"
