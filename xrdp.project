@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Project Name="xrdp" InternalType="">
+  <VirtualDirectory Name="xorg">
+    <VirtualDirectory Name="X11R7.6">
+      <VirtualDirectory Name="rdp">
+        <File Name="xorg/X11R7.6/rdp/gcops.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdp.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpComposite.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpCopyArea.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpCopyArea.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpCopyPlane.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpCopyPlane.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpdraw.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpdraw.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpFillPolygon.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpFillPolygon.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpFillSpans.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpFillSpans.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpglyph.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpglyph.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpImageGlyphBlt.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpImageGlyphBlt.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpImageText16.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpImageText16.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpImageText8.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpImageText8.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpinput.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpkeyboard.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpkeyboard.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpkeyboardbase.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpkeyboardbase.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpkeyboardevdev.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpkeyboardevdev.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpmain.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpmisc.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyArc.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyArc.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyFillArc.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyFillArc.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyFillRect.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyFillRect.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyGlyphBlt.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyGlyphBlt.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolylines.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolylines.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyPoint.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyPoint.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyRectangle.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyRectangle.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolySegment.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolySegment.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyText16.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyText16.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyText8.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPolyText8.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPushPixels.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPushPixels.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPutImage.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpPutImage.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdprandr.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdprandr.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpSetSpans.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpSetSpans.h"/>
+        <File Name="xorg/X11R7.6/rdp/rdpup.c"/>
+        <File Name="xorg/X11R7.6/rdp/rdpxv.c"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
+    <VirtualDirectory Name="tests">
+      <VirtualDirectory Name="randr">
+        <File Name="xorg/tests/randr/trandr.c"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="xdemo">
+        <File Name="xorg/tests/xdemo/bmp_parser.c"/>
+        <File Name="xorg/tests/xdemo/common.h"/>
+        <File Name="xorg/tests/xdemo/xdemo.c"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="tests">
+    <VirtualDirectory Name="gtcp_proxy">
+      <File Name="tests/gtcp_proxy/gtcp-proxy.c"/>
+      <File Name="tests/gtcp_proxy/gtcp.c"/>
+      <File Name="tests/gtcp_proxy/gtcp.h"/>
+      <File Name="tests/gtcp_proxy/hexdump.c"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="memtest">
+      <File Name="tests/memtest/libmem.c"/>
+      <File Name="tests/memtest/libmem.h"/>
+      <File Name="tests/memtest/memtest.c"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="tcp_proxy">
+      <File Name="tests/tcp_proxy/main.c"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <VirtualDirectory Name="sesman">
+    <VirtualDirectory Name="chansrv">
+      <VirtualDirectory Name="pcsc">
+        <VirtualDirectory Name="wrapper">
+          <File Name="sesman/chansrv/pcsc/wrapper/winscard-funcs.h"/>
+          <File Name="sesman/chansrv/pcsc/wrapper/winscard.c"/>
+        </VirtualDirectory>
+        <File Name="sesman/chansrv/pcsc/xrdp_pcsc.c"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="pulse">
+        <File Name="sesman/chansrv/pulse/module-xrdp-sink-symdef.h"/>
+        <File Name="sesman/chansrv/pulse/module-xrdp-sink.c"/>
+        <File Name="sesman/chansrv/pulse/module-xrdp-source-symdef.h"/>
+        <File Name="sesman/chansrv/pulse/module-xrdp-source.c"/>
+      </VirtualDirectory>
+      <File Name="sesman/chansrv/chansrv.c"/>
+      <File Name="sesman/chansrv/chansrv.h"/>
+      <File Name="sesman/chansrv/chansrv_common.c"/>
+      <File Name="sesman/chansrv/chansrv_common.h"/>
+      <File Name="sesman/chansrv/chansrv_fuse.c"/>
+      <File Name="sesman/chansrv/chansrv_fuse.h"/>
+      <File Name="sesman/chansrv/clipboard.c"/>
+      <File Name="sesman/chansrv/clipboard.h"/>
+      <File Name="sesman/chansrv/clipboard_common.h"/>
+      <File Name="sesman/chansrv/clipboard_file.c"/>
+      <File Name="sesman/chansrv/clipboard_file.h"/>
+      <File Name="sesman/chansrv/devredir.c"/>
+      <File Name="sesman/chansrv/devredir.h"/>
+      <File Name="sesman/chansrv/drdynvc.c"/>
+      <File Name="sesman/chansrv/drdynvc.h"/>
+      <File Name="sesman/chansrv/fifo.c"/>
+      <File Name="sesman/chansrv/fifo.h"/>
+      <File Name="sesman/chansrv/irp.c"/>
+      <File Name="sesman/chansrv/irp.h"/>
+      <File Name="sesman/chansrv/mlog.h"/>
+      <File Name="sesman/chansrv/rail.c"/>
+      <File Name="sesman/chansrv/rail.h"/>
+      <File Name="sesman/chansrv/smartcard.c"/>
+      <File Name="sesman/chansrv/smartcard.h"/>
+      <File Name="sesman/chansrv/smartcard_pcsc.c"/>
+      <File Name="sesman/chansrv/smartcard_pcsc.h"/>
+      <File Name="sesman/chansrv/sound.c"/>
+      <File Name="sesman/chansrv/sound.h"/>
+      <File Name="sesman/chansrv/xcommon.c"/>
+      <File Name="sesman/chansrv/xcommon.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="libscp">
+      <File Name="sesman/libscp/libscp.h"/>
+      <File Name="sesman/libscp/libscp_commands.h"/>
+      <File Name="sesman/libscp/libscp_commands_mng.h"/>
+      <File Name="sesman/libscp/libscp_connection.c"/>
+      <File Name="sesman/libscp/libscp_connection.h"/>
+      <File Name="sesman/libscp/libscp_init.c"/>
+      <File Name="sesman/libscp/libscp_init.h"/>
+      <File Name="sesman/libscp/libscp_lock.c"/>
+      <File Name="sesman/libscp/libscp_lock.h"/>
+      <File Name="sesman/libscp/libscp_session.c"/>
+      <File Name="sesman/libscp/libscp_session.h"/>
+      <File Name="sesman/libscp/libscp_tcp.c"/>
+      <File Name="sesman/libscp/libscp_tcp.h"/>
+      <File Name="sesman/libscp/libscp_types.h"/>
+      <File Name="sesman/libscp/libscp_types_mng.h"/>
+      <File Name="sesman/libscp/libscp_v0.c"/>
+      <File Name="sesman/libscp/libscp_v0.h"/>
+      <File Name="sesman/libscp/libscp_v1c.c"/>
+      <File Name="sesman/libscp/libscp_v1c.h"/>
+      <File Name="sesman/libscp/libscp_v1c_mng.c"/>
+      <File Name="sesman/libscp/libscp_v1c_mng.h"/>
+      <File Name="sesman/libscp/libscp_v1s.c"/>
+      <File Name="sesman/libscp/libscp_v1s.h"/>
+      <File Name="sesman/libscp/libscp_v1s_mng.c"/>
+      <File Name="sesman/libscp/libscp_v1s_mng.h"/>
+      <File Name="sesman/libscp/libscp_vX.c"/>
+      <File Name="sesman/libscp/libscp_vX.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="sessvc">
+      <File Name="sesman/sessvc/sessvc.c"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="tools">
+      <File Name="sesman/tools/config.c"/>
+      <File Name="sesman/tools/dis.c"/>
+      <File Name="sesman/tools/sesadmin.c"/>
+      <File Name="sesman/tools/sesrun.c"/>
+      <File Name="sesman/tools/sestest.c"/>
+      <File Name="sesman/tools/tcp.c"/>
+      <File Name="sesman/tools/tcp.h"/>
+      <File Name="sesman/tools/xcon.c"/>
+    </VirtualDirectory>
+    <File Name="sesman/access.c"/>
+    <File Name="sesman/access.h"/>
+    <File Name="sesman/auth.h"/>
+    <File Name="sesman/config.c"/>
+    <File Name="sesman/config.h"/>
+    <File Name="sesman/env.c"/>
+    <File Name="sesman/env.h"/>
+    <File Name="sesman/scp.c"/>
+    <File Name="sesman/scp.h"/>
+    <File Name="sesman/scp_v0.c"/>
+    <File Name="sesman/scp_v0.h"/>
+    <File Name="sesman/scp_v1.c"/>
+    <File Name="sesman/scp_v1.h"/>
+    <File Name="sesman/scp_v1_mng.c"/>
+    <File Name="sesman/scp_v1_mng.h"/>
+    <File Name="sesman/sesman.c"/>
+    <File Name="sesman/sesman.h"/>
+    <File Name="sesman/session.c"/>
+    <File Name="sesman/session.h"/>
+    <File Name="sesman/sig.c"/>
+    <File Name="sesman/sig.h"/>
+    <File Name="sesman/verify_user.c"/>
+    <File Name="sesman/verify_user_bsd.c"/>
+    <File Name="sesman/verify_user_kerberos.c"/>
+    <File Name="sesman/verify_user_pam.c"/>
+    <File Name="sesman/verify_user_pam_userpass.c"/>
+    <File Name="sesman/xauth.c"/>
+    <File Name="sesman/xauth.h"/>
+  </VirtualDirectory>
+  <Description/>
+  <Dependencies/>
+  <Settings Type="Dynamic Library">
+    <GlobalSettings>
+      <Compiler Options="" C_Options="" Assembler="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" C_Options="-g" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand/>
+        <CleanCommand>make clean</CleanCommand>
+        <BuildCommand>make</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory>$(WorkspacePath)</WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="-O2" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand/>
+        <CleanCommand>make clean</CleanCommand>
+        <BuildCommand>make</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory>$(WorkspacePath)</WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+  </Settings>
+  <VirtualDirectory Name="xrdp">
+    <File Name="xrdp/funcs.c"/>
+    <File Name="xrdp/lang.c"/>
+    <File Name="xrdp/xrdp.c"/>
+    <File Name="xrdp/xrdp.h"/>
+    <File Name="xrdp/xrdp_bitmap.c"/>
+    <File Name="xrdp/xrdp_cache.c"/>
+    <File Name="xrdp/xrdp_encoder.c"/>
+    <File Name="xrdp/xrdp_encoder.h"/>
+    <File Name="xrdp/xrdp_font.c"/>
+    <File Name="xrdp/xrdp_listen.c"/>
+    <File Name="xrdp/xrdp_login_wnd.c"/>
+    <File Name="xrdp/xrdp_mm.c"/>
+    <File Name="xrdp/xrdp_painter.c"/>
+    <File Name="xrdp/xrdp_process.c"/>
+    <File Name="xrdp/xrdp_region.c"/>
+    <File Name="xrdp/xrdp_types.h"/>
+    <File Name="xrdp/xrdp_wm.c"/>
+    <File Name="xrdp/xrdpwin.c"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="common">
+    <File Name="common/arch.h"/>
+    <File Name="common/crc16.h"/>
+    <File Name="common/defines.h"/>
+    <File Name="common/fifo.c"/>
+    <File Name="common/fifo.h"/>
+    <File Name="common/file.c"/>
+    <File Name="common/file.h"/>
+    <File Name="common/file_loc.h"/>
+    <File Name="common/list.c"/>
+    <File Name="common/list.h"/>
+    <File Name="common/list16.c"/>
+    <File Name="common/list16.h"/>
+    <File Name="common/log.c"/>
+    <File Name="common/log.h"/>
+    <File Name="common/os_calls.c"/>
+    <File Name="common/os_calls.h"/>
+    <File Name="common/parse.h"/>
+    <File Name="common/pixman-region.c"/>
+    <File Name="common/pixman-region.h"/>
+    <File Name="common/pixman-region16.c"/>
+    <File Name="common/rail.h"/>
+    <File Name="common/ssl_calls.c"/>
+    <File Name="common/ssl_calls.h"/>
+    <File Name="common/thread_calls.c"/>
+    <File Name="common/thread_calls.h"/>
+    <File Name="common/trans.c"/>
+    <File Name="common/trans.h"/>
+    <File Name="common/xrdp_client_info.h"/>
+    <File Name="common/xrdp_constants.h"/>
+    <File Name="common/xrdp_rail.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="fontdump">
+    <File Name="fontdump/fontdump.c"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="genkeymap">
+    <File Name="genkeymap/evdev-map.c"/>
+    <File Name="genkeymap/genkeymap.c"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="keygen">
+    <File Name="keygen/keygen.c"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="libxrdp">
+    <File Name="libxrdp/libxrdp.c"/>
+    <File Name="libxrdp/libxrdp.h"/>
+    <File Name="libxrdp/libxrdpinc.h"/>
+    <File Name="libxrdp/xrdp_bitmap32_compress.c"/>
+    <File Name="libxrdp/xrdp_bitmap_compress.c"/>
+    <File Name="libxrdp/xrdp_caps.c"/>
+    <File Name="libxrdp/xrdp_channel.c"/>
+    <File Name="libxrdp/xrdp_fastpath.c"/>
+    <File Name="libxrdp/xrdp_iso.c"/>
+    <File Name="libxrdp/xrdp_jpeg_compress.c"/>
+    <File Name="libxrdp/xrdp_mcs.c"/>
+    <File Name="libxrdp/xrdp_mppc_enc.c"/>
+    <File Name="libxrdp/xrdp_orders.c"/>
+    <File Name="libxrdp/xrdp_orders_rail.c"/>
+    <File Name="libxrdp/xrdp_orders_rail.h"/>
+    <File Name="libxrdp/xrdp_rdp.c"/>
+    <File Name="libxrdp/xrdp_sec.c"/>
+    <File Name="libxrdp/xrdp_surface.c"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="mc">
+    <File Name="mc/mc.c"/>
+    <File Name="mc/mc.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="neutrinordp">
+    <File Name="neutrinordp/xrdp-color.c"/>
+    <File Name="neutrinordp/xrdp-color.h"/>
+    <File Name="neutrinordp/xrdp-neutrinordp.c"/>
+    <File Name="neutrinordp/xrdp-neutrinordp.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="rdp">
+    <File Name="rdp/rdp.c"/>
+    <File Name="rdp/rdp.h"/>
+    <File Name="rdp/rdp_bitmap.c"/>
+    <File Name="rdp/rdp_iso.c"/>
+    <File Name="rdp/rdp_lic.c"/>
+    <File Name="rdp/rdp_mcs.c"/>
+    <File Name="rdp/rdp_orders.c"/>
+    <File Name="rdp/rdp_rdp.c"/>
+    <File Name="rdp/rdp_sec.c"/>
+    <File Name="rdp/rdp_tcp.c"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="tcutils">
+    <File Name="tcutils/main.cpp"/>
+    <File Name="tcutils/mainwindow.cpp"/>
+    <File Name="tcutils/mainwindow.h"/>
+    <File Name="tcutils/utils.cpp"/>
+    <File Name="tcutils/utils.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="vnc">
+    <File Name="vnc/vnc.c"/>
+    <File Name="vnc/vnc.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="vrplayer">
+    <File Name="vrplayer/decoder.cpp"/>
+    <File Name="vrplayer/decoder.h"/>
+    <File Name="vrplayer/decoderthread.cpp"/>
+    <File Name="vrplayer/decoderthread.h"/>
+    <File Name="vrplayer/demuxmedia.cpp"/>
+    <File Name="vrplayer/demuxmedia.h"/>
+    <File Name="vrplayer/dlgabout.cpp"/>
+    <File Name="vrplayer/dlgabout.h"/>
+    <File Name="vrplayer/main.cpp"/>
+    <File Name="vrplayer/mainwindow.cpp"/>
+    <File Name="vrplayer/mainwindow.h"/>
+    <File Name="vrplayer/mediapacket.cpp"/>
+    <File Name="vrplayer/mediapacket.h"/>
+    <File Name="vrplayer/ourinterface.cpp"/>
+    <File Name="vrplayer/ourinterface.h"/>
+    <File Name="vrplayer/playaudio.cpp"/>
+    <File Name="vrplayer/playaudio.h"/>
+    <File Name="vrplayer/playvideo.cpp"/>
+    <File Name="vrplayer/playvideo.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="xrdpapi">
+    <File Name="xrdpapi/simple.c"/>
+    <File Name="xrdpapi/vrplayer.c"/>
+    <File Name="xrdpapi/xrdpapi.c"/>
+    <File Name="xrdpapi/xrdpapi.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="xrdpvr">
+    <File Name="xrdpvr/xrdpvr.c"/>
+    <File Name="xrdpvr/xrdpvr.h"/>
+    <File Name="xrdpvr/xrdpvr_internal.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="xup">
+    <File Name="xup/xup.c"/>
+    <File Name="xup/xup.h"/>
+  </VirtualDirectory>
+</CodeLite_Project>

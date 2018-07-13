@@ -38,16 +38,16 @@
     do { if (_level < LOG_LEVEL) { g_hexdump _args ; } } while (0)
 
 
-#define CASE(X) case X: return #X
-
 struct blob
 {
     int length;
     unsigned char *data;
 };
 
+/*****************************************************************************/
 const char *gss_maj_to_str(tui32 err)
 {
+#define CASE(X) case X: return #X
     switch (err)
     {
             CASE(GSS_S_COMPLETE);
@@ -120,6 +120,7 @@ enum ntlm_err_code
     ERR_LAST
 };
 
+/*****************************************************************************/
 static void print_min_status(tui32 err)
 {
     gss_buffer_desc buf;
@@ -148,6 +149,7 @@ static void print_min_status(tui32 err)
     while (msgctx);
 }
 
+/*****************************************************************************/
 int test_Errors(void)
 {
     int i;
@@ -156,12 +158,13 @@ int test_Errors(void)
     {
         LLOGLN(0, ("%x: ", i));
         print_min_status(i);
-        LLOGLN(0, (""));
+        LLOGLN(0, ("-"));
     }
 
     return 0;
 }
 
+/*****************************************************************************/
 static void print_gss_error(const char *text, tui32 maj, tui32 min)
 {
 
@@ -172,11 +175,12 @@ static void print_gss_error(const char *text, tui32 maj, tui32 min)
 }
 
 
+/*****************************************************************************/
 static void
-cssp_gss_report_error(OM_uint32 code, char *str, OM_uint32 major_status, OM_uint32 minor_status)
+cssp_gss_report_error(OM_uint32 code, const char *str, OM_uint32 major_status, OM_uint32 minor_status)
 {
-    OM_uint32 msgctx = 0, ms;
-    gss_buffer_desc status_string;
+    // OM_uint32 msgctx = 0, ms;
+    // gss_buffer_desc status_string;
 
     //  LLOGLN(10, ("GSS error [%d:%d:%d]: %s\n", (major_status & 0xff000000) >> 24,    // Calling error
     //        (major_status & 0xff0000) >> 16,  // Routine error
@@ -199,6 +203,7 @@ cssp_gss_report_error(OM_uint32 code, char *str, OM_uint32 major_status, OM_uint
 }
 
 
+/*****************************************************************************/
 int cssp_gss_mech_available(gss_OID mech)
 {
     int mech_found;
@@ -243,6 +248,7 @@ int cssp_gss_mech_available(gss_OID mech)
     return 1;
 }
 
+/*****************************************************************************/
 static int
 cssp_gss_get_service_name(char *server, gss_name_t *name)
 {
@@ -252,11 +258,11 @@ cssp_gss_get_service_name(char *server, gss_name_t *name)
     const char service_name[] = "TERMSRV";
 
     gss_OID type = (gss_OID) GSS_C_NT_HOSTBASED_SERVICE;
-    int size = (strlen(service_name) + 1 + strlen(server) + 1);
+    int size = (g_strlen(service_name) + 1 + g_strlen(server) + 1);
 
     output.value = malloc(size);
-    snprintf(output.value, size, "%s@%s", service_name, server);
-    output.length = strlen(output.value) + 1;
+    g_snprintf(output.value, size, "%s@%s", service_name, server);
+    output.length = g_strlen(output.value) + 1;
 
     major_status = gss_import_name(&minor_status, &output, type, name);
 
@@ -273,6 +279,7 @@ cssp_gss_get_service_name(char *server, gss_name_t *name)
 
 }
 
+/*****************************************************************************/
 static int
 xrdp_nla_gss_unwrap(gss_ctx_id_t *ctx, struct blob *in, struct blob **out)
 {
@@ -302,6 +309,7 @@ xrdp_nla_gss_unwrap(gss_ctx_id_t *ctx, struct blob *in, struct blob **out)
     return 1;
 }
 
+/*****************************************************************************/
 static int
 xrdp_nla_gss_wrap(gss_ctx_id_t *ctx, struct blob *in, struct blob **out)
 {

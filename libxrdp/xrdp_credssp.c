@@ -19,6 +19,7 @@
  *
  * [MS-CSSP] https://msdn.microsoft.com/en-us/library/cc226764.aspx
  */
+
 #if defined(HAVE_CONFIG_H)
 #include <config_ac.h>
 #endif
@@ -104,7 +105,6 @@ xrdp_nla_free_blob(struct blob *b)
     return 0;
 }
 
-
 /*****************************************************************************/
 int
 xrdp_nla_recv_tsrequest(struct xrdp_nla *self)
@@ -169,8 +169,7 @@ xrdp_nla_recv_tsrequest(struct xrdp_nla *self)
     return 0;
 }
 
-
-
+/*****************************************************************************/
 int credssp_sizeof_nego_token(int length)
 {
     length = ber_sizeof_octet_string(length);
@@ -178,6 +177,7 @@ int credssp_sizeof_nego_token(int length)
     return length;
 }
 
+/*****************************************************************************/
 int credssp_sizeof_nego_tokens(int length)
 {
     length = credssp_sizeof_nego_token(length);
@@ -187,6 +187,7 @@ int credssp_sizeof_nego_tokens(int length)
     return length;
 }
 
+/*****************************************************************************/
 int credssp_sizeof_pub_key_auth(int length)
 {
     length = ber_sizeof_octet_string(length);
@@ -194,6 +195,7 @@ int credssp_sizeof_pub_key_auth(int length)
     return length;
 }
 
+/*****************************************************************************/
 int credssp_sizeof_auth_info(int length)
 {
     length = ber_sizeof_octet_string(length);
@@ -201,14 +203,13 @@ int credssp_sizeof_auth_info(int length)
     return length;
 }
 
+/*****************************************************************************/
 int credssp_sizeof_ts_request(int length)
 {
     length += ber_sizeof_integer(2);
     length += ber_sizeof_contextual_tag(3);
     return length;
 }
-
-
 
 /*****************************************************************************/
 void xrdp_nla_send_tsrequest(struct xrdp_nla *self)
@@ -270,7 +271,7 @@ void xrdp_nla_send_tsrequest(struct xrdp_nla *self)
     xstream_free(s);
 }
 
-
+/*****************************************************************************/
 void ap_integer_increment_le(struct blob *b)
 {
     int index;
@@ -291,4 +292,3 @@ void ap_integer_increment_le(struct blob *b)
         }
     }
 }
-
