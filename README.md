@@ -149,3 +149,6 @@ xrdp
 ├── xrdpvr ······ API for playing media over RDP
 └── xup ········· xorgxrdp client module
 ```
+
+An optional modern pre-session interface is available with the system LVGL
+library. See [LVGL login UI](docs/lvgl.md) for build requirements and configuration.

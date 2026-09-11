@@ -2694,12 +2694,12 @@ xrdp_mm_process_login_response(struct xrdp_mm *self)
         {
             char buff[128];
             scp_login_status_to_str(login_result, buff, sizeof(buff));
-            xrdp_wm_log_msg(self->wm, LOG_LEVEL_INFO, "%s", buff);
+            xrdp_wm_log_msg(self->wm, LOG_LEVEL_ERROR, "%s", buff);
 
             if (login_result == E_SCP_LOGIN_NOT_AUTHENTICATED &&
                     self->wm->pamerrortxt[0] != '\0')
             {
-                xrdp_wm_log_msg(self->wm, LOG_LEVEL_INFO, "%s",
+                xrdp_wm_log_msg(self->wm, LOG_LEVEL_ERROR, "%s",
                                 self->wm->pamerrortxt);
             }
 
@@ -2715,7 +2715,7 @@ xrdp_mm_process_login_response(struct xrdp_mm *self)
             {
                 if (login_result == E_SCP_LOGIN_NOT_AUTHENTICATED)
                 {
-                    xrdp_wm_log_msg(self->wm, LOG_LEVEL_INFO, "%s",
+                    xrdp_wm_log_msg(self->wm, LOG_LEVEL_ERROR, "%s",
                                     "Login retry limit reached");
                 }
                 xrdp_mm_logwnd_fatal(self,
@@ -2777,7 +2777,7 @@ xrdp_mm_process_create_session_response(struct xrdp_mm *self)
         {
             char buff[128];
             scp_screate_status_to_str(status, buff, sizeof(buff));
-            xrdp_wm_log_msg(self->wm, LOG_LEVEL_INFO,
+            xrdp_wm_log_msg(self->wm, LOG_LEVEL_ERROR,
                             "Can't create session for user %s - %s",
                             username, buff);
             /* Leave the sesman connection open for further login attenpts */
@@ -2834,7 +2834,7 @@ xrdp_mm_process_connect_session_response(struct xrdp_mm *self)
                 username = "???";
             }
 
-            xrdp_wm_log_msg(self->wm, LOG_LEVEL_INFO,
+            xrdp_wm_log_msg(self->wm, LOG_LEVEL_ERROR,
                             "Can't create session for user %s - %s",
                             username, buff);
             xrdp_mm_logwnd_fatal(self,
