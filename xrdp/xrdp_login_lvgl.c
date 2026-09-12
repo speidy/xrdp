@@ -192,23 +192,66 @@ heading(struct xrdp_login_lvgl *ui, lv_obj_t *parent, const char *text)
 {
     lv_obj_t *obj = label(parent, text);
     lv_obj_set_style_text_font(obj, ui->heading_font, 0);
+    lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, 0);
     return obj;
+}
+
+/* Shared by the login card and its help sheet. No blur or animation work
+ * is needed when the screen is idle. */
+static void
+style_sheet(struct xrdp_login_lvgl *ui, lv_obj_t *obj)
+{
+    lv_obj_set_style_pad_all(obj, px(ui, 32), 0);
+    lv_obj_set_style_pad_row(obj, px(ui, 18), 0);
+    lv_obj_set_style_anim_duration(obj, 0, 0);
+    lv_obj_set_style_radius(obj, px(ui, 36), 0);
+    lv_obj_set_style_bg_color(obj, lv_color_white(), 0);
+    lv_obj_set_style_bg_opa(obj, 220, 0);
+    lv_obj_set_style_border_color(obj, lv_color_white(), 0);
+    lv_obj_set_style_border_opa(obj, LV_OPA_80, 0);
+    lv_obj_set_style_border_width(obj, 1, 0);
+    lv_obj_set_style_shadow_color(obj, lv_color_hex(0x535d9c), 0);
+    lv_obj_set_style_shadow_width(obj, px(ui, 48), 0);
+    lv_obj_set_style_shadow_ofs_y(obj, px(ui, 16), 0);
+    lv_obj_set_style_shadow_opa(obj, LV_OPA_10, 0);
+}
+
+static void
+style_control(struct xrdp_login_lvgl *ui, lv_obj_t *obj)
+{
+    lv_obj_set_style_radius(obj, px(ui, 18), 0);
+    lv_obj_set_style_bg_color(obj, lv_color_white(), 0);
+    lv_obj_set_style_bg_opa(obj, LV_OPA_80, 0);
+    lv_obj_set_style_border_width(obj, 1, 0);
+    lv_obj_set_style_border_color(obj, lv_color_hex(0xdfe3ef), 0);
+    lv_obj_set_style_pad_all(obj, px(ui, 16), 0);
+    lv_obj_set_style_border_color(obj, lv_color_hex(0x007aff), LV_STATE_FOCUSED);
+    lv_obj_set_style_outline_color(obj, lv_color_hex(0x007aff), LV_STATE_FOCUSED);
+    lv_obj_set_style_outline_width(obj, 2, LV_STATE_FOCUSED);
+    lv_obj_set_style_outline_pad(obj, 2, LV_STATE_FOCUSED);
 }
 
 static lv_obj_t *
 button(struct xrdp_login_lvgl *ui, lv_obj_t *parent, const char *text, int action)
 {
     lv_obj_t *obj = lv_button_create(parent);
-    lv_obj_set_style_radius(obj, px(ui, 6), 0);
-    lv_obj_set_style_bg_color(obj, lv_color_hex(action == UI_SUBMIT ? 0x2563eb : 0xe2e8f0), 0);
-    lv_obj_set_style_text_color(obj, action == UI_SUBMIT ? lv_color_white() : lv_color_hex(0x0f172a), 0);
-    lv_obj_set_style_outline_color(obj, lv_color_hex(0x1d4ed8), LV_STATE_FOCUSED);
+    int primary = action == UI_SUBMIT || action == UI_ACK || action == UI_CLOSE_HELP;
+    lv_obj_set_style_radius(obj, LV_RADIUS_CIRCLE, 0);
+    lv_obj_set_height(obj, px(ui, 54));
+    lv_obj_set_width(obj, primary ? LV_PCT(100) : LV_PCT(47));
+    lv_obj_set_style_bg_color(obj, lv_color_hex(primary ? 0x0066d6 : 0xffffff), 0);
+    lv_obj_set_style_bg_opa(obj, primary ? LV_OPA_COVER : LV_OPA_TRANSP, 0);
+    lv_obj_set_style_shadow_width(obj, 0, 0);
+    lv_obj_set_style_text_color(obj, primary ? lv_color_white() : lv_color_hex(0x2465ad), 0);
+    lv_obj_set_style_outline_color(obj, lv_color_hex(0x007aff), LV_STATE_FOCUSED);
     lv_obj_set_style_outline_width(obj, 2, LV_STATE_FOCUSED);
     lv_obj_set_style_outline_pad(obj, 3, LV_STATE_FOCUSED);
     lv_obj_set_user_data(obj, (void *)(intptr_t)action);
     lv_obj_add_event_cb(obj, request_action, LV_EVENT_CLICKED, ui);
     lv_group_add_obj(ui->group, obj);
-    lv_label_set_text(lv_label_create(obj), text);
+    lv_obj_t *caption = lv_label_create(obj);
+    lv_label_set_text(caption, text);
+    lv_obj_center(caption);
     return obj;
 }
 
@@ -268,7 +311,12 @@ build_fields(struct xrdp_wm *wm)
         if (xrdp_login_get_field(wm, mod, i, ui->modules->count, value))
         {
             lv_obj_t *edit;
-            label(ui->fields, name);
+            lv_obj_t *caption = label(ui->fields,
+                                      g_strcasecmp(name, "username") == 0 ? "Username" :
+                                      g_strcasecmp(name, "password") == 0 ? "Password" : name);
+            lv_obj_set_style_text_font(caption, ui->log_font, 0);
+            lv_obj_set_style_text_color(caption, lv_color_hex(0x596579), 0);
+            lv_obj_set_style_pad_left(caption, px(ui, 6), 0);
             edit = lv_textarea_create(ui->fields);
             ui->edits[i] = edit;
             lv_obj_set_width(edit, LV_PCT(100));
@@ -277,10 +325,7 @@ build_fields(struct xrdp_wm *wm)
             lv_textarea_set_password_mode(edit, xrdp_login_is_secret(name));
             lv_textarea_set_password_show_time(edit, 0);
             lv_textarea_set_text(edit, value);
-            lv_obj_set_style_radius(edit, px(ui, 6), 0);
-            lv_obj_set_style_border_color(edit, lv_color_hex(0xcbd5e1), 0);
-            lv_obj_set_style_border_color(edit, lv_color_hex(0x2563eb), LV_STATE_FOCUSED);
-            lv_obj_set_style_border_width(edit, 2, LV_STATE_FOCUSED);
+            style_control(ui, edit);
             lv_obj_add_event_cb(edit, limit_insert, LV_EVENT_INSERT, NULL);
             lv_group_add_obj(ui->group, edit);
             if (focus == NULL || (username_set && xrdp_login_is_secret(name)))
@@ -343,7 +388,7 @@ place_card(struct xrdp_wm *wm)
     ui->primary_y = y;
     ui->primary_width = w;
     ui->primary_height = h;
-    lv_obj_set_width(ui->card, MAX(64, MIN(px(ui, ui->log_rows ? 560 : 440), w - 24)));
+    lv_obj_set_width(ui->card, MAX(64, MIN(px(ui, ui->log_rows ? 560 : 448), w - 24)));
     lv_obj_set_style_max_height(ui->card, MAX(64, h - 24), 0);
     lv_obj_update_layout(ui->card);
     lv_obj_set_pos(ui->card, x + (w - lv_obj_get_width(ui->card)) / 2,
@@ -417,22 +462,37 @@ create_view(struct xrdp_wm *wm, int prompt)
     char host[256];
     char path[512];
     int i;
-    lv_obj_set_style_bg_color(screen, lv_color_hex(0xf1f5f9), 0);
+    lv_obj_remove_flag(screen, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_style_bg_color(screen, lv_color_hex(0xe5eaff), 0);
+    lv_obj_set_style_bg_grad_color(screen, lv_color_hex(0xf8e5ee), 0);
+    lv_obj_set_style_bg_grad_dir(screen, LV_GRAD_DIR_VER, 0);
+    /* Static, soft colour fields keep the software-rendered backdrop cheap. */
+    for (i = 0; i < 3; ++i)
+    {
+        const unsigned int colors[] = {0xc3d5ff, 0xd6c9f4, 0xfbded5};
+        lv_obj_t *orb = lv_obj_create(screen);
+        lv_obj_remove_style_all(orb);
+        lv_obj_remove_flag(orb, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);
+        lv_obj_set_size(orb, LV_PCT(70), LV_PCT(85));
+        lv_obj_set_style_radius(orb, LV_RADIUS_CIRCLE, 0);
+        lv_obj_set_style_bg_color(orb, lv_color_hex(colors[i]), 0);
+        lv_obj_set_style_bg_opa(orb, LV_OPA_50, 0);
+        lv_obj_set_style_shadow_color(orb, lv_color_hex(colors[i]), 0);
+        lv_obj_set_style_shadow_width(orb, px(ui, 80), 0);
+        lv_obj_set_style_shadow_opa(orb, LV_OPA_30, 0);
+        lv_obj_align(orb, i == 0 ? LV_ALIGN_TOP_LEFT :
+                     i == 1 ? LV_ALIGN_RIGHT_MID : LV_ALIGN_BOTTOM_LEFT,
+                     px(ui, i == 1 ? 160 : -140), px(ui, i == 0 ? -240 : 200));
+    }
     lv_obj_set_style_text_font(screen, ui->font, 0);
-    lv_obj_set_style_text_color(screen, lv_color_hex(0x0f172a), 0);
+    lv_obj_set_style_text_color(screen, lv_color_hex(0x1c2434), 0);
     load_image(wm, cfg->ls_background_image, &ui->background, &ui->background_image,
                screen, cfg->ls_background_transform, wm->screen->width, wm->screen->height);
     ui->card = lv_obj_create(screen);
     lv_obj_set_height(ui->card, LV_SIZE_CONTENT);
     lv_obj_set_flex_flow(ui->card, LV_FLEX_FLOW_COLUMN);
-    lv_obj_set_style_pad_all(ui->card, px(ui, 24), 0);
-    lv_obj_set_style_pad_row(ui->card, px(ui, 14), 0);
-    lv_obj_set_style_anim_duration(ui->card, 0, 0);
-    lv_obj_set_style_radius(ui->card, px(ui, 12), 0);
-    lv_obj_set_style_bg_color(ui->card, lv_color_white(), 0);
-    lv_obj_set_style_border_width(ui->card, 0, 0);
-    lv_obj_set_style_shadow_width(ui->card, px(ui, 18), 0);
-    lv_obj_set_style_shadow_opa(ui->card, LV_OPA_10, 0);
+    style_sheet(ui, ui->card);
+    lv_obj_set_flex_align(ui->card, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     if (cfg->ls_logo_filename[0] != '\0')
     {
         g_strncpy(path, cfg->ls_logo_filename, sizeof(path) - 1);
@@ -442,10 +502,11 @@ create_view(struct xrdp_wm *wm, int prompt)
         g_snprintf(path, sizeof(path), "%s/xrdp_logo.bmp", XRDP_SHARE_PATH);
     }
     load_image(wm, path, &ui->logo, &ui->logo_image, ui->card, XBLT_SCALE,
-               px(ui, 112), px(ui, 44));
-    heading(ui, ui->card, cfg->ls_title[0] ? cfg->ls_title : "Welcome to xrdp");
-    ui->status = label(ui->card, prompt ? "Sign in to your remote desktop" : "Connecting…");
-    lv_obj_set_style_text_color(ui->status, lv_color_hex(0x475569), 0);
+               px(ui, 88), px(ui, 34));
+    heading(ui, ui->card, cfg->ls_title[0] ? cfg->ls_title : "Hello again.");
+    ui->status = label(ui->card, prompt ? "Your workspace, wherever you are." : "Connecting…");
+    lv_obj_set_style_text_color(ui->status, lv_color_hex(0x596579), 0);
+    lv_obj_set_style_text_align(ui->status, LV_TEXT_ALIGN_CENTER, 0);
     if (!prompt)
     {
         ui->mode = 1;
@@ -456,9 +517,11 @@ create_view(struct xrdp_wm *wm, int prompt)
     {
         return 1;
     }
-    label(ui->card, "Session");
+
     ui->sessions = lv_dropdown_create(ui->card);
+    style_control(ui, ui->sessions);
     lv_dropdown_set_symbol(ui->sessions, NULL);
+    style_control(ui, lv_dropdown_get_list(ui->sessions));
     lv_obj_set_style_pad_right(ui->sessions, px(ui, 36), 0);
     lv_obj_add_event_cb(ui->sessions, draw_dropdown_chevron, LV_EVENT_DRAW_MAIN, ui);
     lv_dropdown_clear_options(ui->sessions);
@@ -476,7 +539,7 @@ create_view(struct xrdp_wm *wm, int prompt)
     lv_obj_remove_style_all(ui->fields);
     lv_obj_set_size(ui->fields, LV_PCT(100), LV_SIZE_CONTENT);
     lv_obj_set_flex_flow(ui->fields, LV_FLEX_FLOW_COLUMN);
-    lv_obj_set_style_pad_row(ui->fields, px(ui, 8), 0);
+    lv_obj_set_style_pad_row(ui->fields, px(ui, 10), 0);
     if (build_fields(wm))
     {
         return 1;
@@ -485,10 +548,11 @@ create_view(struct xrdp_wm *wm, int prompt)
     lv_obj_remove_style_all(row);
     lv_obj_set_size(row, LV_PCT(100), LV_SIZE_CONTENT);
     lv_obj_set_flex_flow(row, LV_FLEX_FLOW_ROW_WRAP);
-    lv_obj_set_style_pad_gap(row, px(ui, 10), 0);
-    ui->submit = button(ui, row, "Sign in", UI_SUBMIT);
+    lv_obj_set_style_pad_gap(row, px(ui, 8), 0);
+    lv_obj_set_flex_align(row, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    ui->submit = button(ui, row, "Continue", UI_SUBMIT);
     button(ui, row, "Cancel", UI_CANCEL);
-    button(ui, row, "Help", UI_HELP);
+    button(ui, row, "Need help?", UI_HELP);
     place_card(wm);
     return 0;
 }
@@ -577,7 +641,7 @@ xrdp_login_lvgl_create(struct xrdp_wm *wm, int prompt)
     ui->font = lv_freetype_font_create(path, LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
                                        17 * dpi / 96, LV_FREETYPE_FONT_STYLE_NORMAL);
     ui->heading_font = lv_freetype_font_create(path, LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
-                       24 * dpi / 96, LV_FREETYPE_FONT_STYLE_BOLD);
+                       36 * dpi / 96, LV_FREETYPE_FONT_STYLE_BOLD);
     ui->log_font = lv_freetype_font_create(path, LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
                                            16 * dpi / 96, LV_FREETYPE_FONT_STYLE_NORMAL);
     failed = ui->event == 0 || ui->frame == NULL || ui->draw_buffer == NULL ||
@@ -691,10 +755,11 @@ create_log_view(struct xrdp_login_lvgl *ui)
     lv_obj_remove_state(ui->card, LV_STATE_DISABLED);
     lv_obj_clean(ui->card);
     ui->help = ui->fields = ui->sessions = ui->submit = NULL;
-    ui->log_title = heading(ui, ui->card, "Connecting to your desktop");
-    ui->status = label(ui->card, "Preparing your session. Follow the steps below.");
+    ui->log_title = heading(ui, ui->card, "Almost there.");
+    ui->status = label(ui->card, "Getting your workspace ready.");
     lv_obj_set_style_text_color(ui->status, lv_color_hex(0x64748b), 0);
     lv_obj_set_style_text_font(ui->status, ui->log_font, 0);
+    lv_obj_set_style_text_align(ui->status, LV_TEXT_ALIGN_CENTER, 0);
     ui->log_rows = lv_obj_create(ui->card);
     lv_obj_remove_style_all(ui->log_rows);
     lv_obj_set_size(ui->log_rows, LV_PCT(100), LV_SIZE_CONTENT);
@@ -821,7 +886,7 @@ xrdp_login_lvgl_log_message(struct xrdp_wm *wm, int level, const char *message)
     lv_obj_set_style_pad_column(row, px(ui, 10), 0);
     lv_obj_set_style_bg_color(row, lv_color_hex(backgrounds[mark]), 0);
     lv_obj_set_style_bg_opa(row, LV_OPA_COVER, 0);
-    lv_obj_set_style_radius(row, px(ui, 8), 0);
+    lv_obj_set_style_radius(row, px(ui, 18), 0);
     icon = lv_obj_create(row);
     lv_obj_remove_style_all(icon);
     lv_obj_set_size(icon, px(ui, 22), px(ui, 22));
@@ -857,7 +922,7 @@ xrdp_login_lvgl_log(struct xrdp_wm *wm, int error)
                       "Review the details below before closing." : "Review the details below, then try again.");
     if (ui->mode != 2)
     {
-        lv_group_focus_obj(button(ui, ui->card, "OK", UI_ACK));
+        lv_group_focus_obj(button(ui, ui->card, wm->fatal_error_in_log_window ? "Close" : "Try again", UI_ACK));
         ui->mode = 2;
     }
     place_card(wm);
@@ -1113,7 +1178,8 @@ handle_action(struct xrdp_wm *wm, int action)
         lv_obj_set_size(ui->help, lv_obj_get_width(ui->card), LV_SIZE_CONTENT);
         lv_obj_set_style_max_height(ui->help, ui->frame->height - 16, 0);
         lv_obj_set_flex_flow(ui->help, LV_FLEX_FLOW_COLUMN);
-        heading(ui, ui->help, "Login help");
+        style_sheet(ui, ui->help);
+        heading(ui, ui->help, "A little help.");
         label(ui->help, "Choose a session and enter your credentials. Usernames and passwords are case sensitive. Contact your system administrator if you cannot sign in.");
         lv_group_focus_obj(button(ui, ui->help, "Back", UI_CLOSE_HELP));
         lv_obj_add_flag(ui->card, LV_OBJ_FLAG_HIDDEN);
