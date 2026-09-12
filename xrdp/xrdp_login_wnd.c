@@ -398,7 +398,7 @@ xrdp_login_get_field(struct xrdp_wm *wm, struct xrdp_mod_data *mod,
         {
             size_t size = g_strlen(src + BASE64PREFIX_LEN) + 1;
             char *decoded = (char *)g_malloc(size, 0);
-            if (base64_decode(src + BASE64PREFIX_LEN, decoded, size - 1, &length) != 0)
+            if (xrdp_base64_decode(src + BASE64PREFIX_LEN, decoded, size - 1, &length) != 0)
             {
                 decoded[0] = '\0';
                 LOG(LOG_LEVEL_WARNING, "Invalid encoded login default for '%s'", name);
@@ -413,7 +413,7 @@ xrdp_login_get_field(struct xrdp_wm *wm, struct xrdp_mod_data *mod,
             g_free(decoded);
             return 0;
         }
-        if (base64_decode(src + BASE64PREFIX_LEN, value, 255, &length) != 0 ||
+        if (xrdp_base64_decode(src + BASE64PREFIX_LEN, value, 255, &length) != 0 ||
                 length > 255)
         {
             value[0] = '\0';
