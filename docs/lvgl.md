@@ -54,8 +54,11 @@ failure to initialize the modern UI selects legacy; initialization errors are
 logged without credentials. Fatal toolkit or allocator failures are not
 recoverable through this fallback.
 
-The light login card preserves the configured session choices, arbitrary
-`ask` fields and defaults, client prefilling, title, logo and background image.
+The modern interface uses a static pastel backdrop, a translucent rounded sheet,
+a large greeting and a full-width primary action. Help and connection details
+share the same styling. The surfaces are composited in software; there is no
+live blur or decorative animation. The login form preserves configured session
+choices, arbitrary `ask` fields and defaults, client prefilling, title, logo and background image.
 Legacy widget coordinates and colors are not applied to the modern layout.
 Image formats retain the existing xrdp image-loader requirements, including
 `--with-imlib2` for non-BMP files. Font coverage depends on the chosen system
