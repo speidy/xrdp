@@ -6,6 +6,7 @@ struct xrdp_wm;
 struct xrdp_rect;
 int xrdp_login_lvgl_create(struct xrdp_wm *wm, int prompt);
 void xrdp_login_lvgl_delete(struct xrdp_wm *wm);
+void xrdp_login_lvgl_prepare_connect(struct xrdp_wm *wm);
 void xrdp_login_lvgl_progress(struct xrdp_wm *wm);
 void xrdp_login_lvgl_log(struct xrdp_wm *wm, int error);
 void xrdp_login_lvgl_log_message(struct xrdp_wm *wm, int level, const char *message);

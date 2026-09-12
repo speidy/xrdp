@@ -2301,6 +2301,8 @@ xrdp_wm_mod_connect_done(struct xrdp_wm *self, int status)
     LOG(LOG_LEVEL_DEBUG, "status from xrdp_mm_connect() : %d", status);
     if (status == 0)
     {
+        /* The module may paint before the next login-state event is handled. */
+        xrdp_login_lvgl_delete(self);
         xrdp_wm_set_login_state(self, WMLS_CLEANUP);
         self->dragging = 0;
     }

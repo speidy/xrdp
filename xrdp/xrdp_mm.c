@@ -23,6 +23,7 @@
 #endif
 #include "xrdp_mm.h"
 #include "xrdp.h"
+#include "xrdp_login_lvgl.h"
 #include "log.h"
 #include "string_calls.h"
 #include "guid.h"
@@ -5442,6 +5443,8 @@ xrdp_mm_setup_mod2(struct xrdp_mm *self)
 
     rv = 1; /* failure */
     g_memset(text, 0, sizeof(text));
+
+    xrdp_login_lvgl_prepare_connect(self->wm);
 
     if (!g_is_wait_obj_set(self->wm->pro_layer->self_term_event))
     {
