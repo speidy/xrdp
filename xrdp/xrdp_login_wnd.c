@@ -301,8 +301,8 @@ xrdp_wm_ok_clicked(struct xrdp_bitmap *wnd)
 */
 int
 xrdp_login_parse_domain(char *originalDomainInfo, int comboMax,
-                                 int decode,
-                                 char *resultBuffer, unsigned int resultSize)
+                        int decode,
+                        char *resultBuffer, unsigned int resultSize)
 {
     int ret;
     int pos;
@@ -380,7 +380,7 @@ xrdp_login_is_secret(const char *name)
 /* Returns true for an editable field. Fixed encoded values are decoded once. */
 int
 xrdp_login_get_field(struct xrdp_wm *wm, struct xrdp_mod_data *mod,
-                    int index, int module_count, char value[256])
+                     int index, int module_count, char value[256])
 {
     const char *name = (const char *)list_get_item(mod->names, index);
     const char *src = (const char *)list_get_item(mod->values, index);
@@ -432,7 +432,7 @@ xrdp_login_get_field(struct xrdp_wm *wm, struct xrdp_mod_data *mod,
             wm->client_info->domain[0] == '_')
     {
         xrdp_login_parse_domain(wm->client_info->domain, module_count, 0,
-                               host, sizeof(host));
+                                host, sizeof(host));
         g_strncpy(value, host, 255);
     }
     if (editable && g_strcasecmp(name, "username") == 0 &&

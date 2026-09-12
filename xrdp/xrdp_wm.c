@@ -1675,8 +1675,8 @@ xrdp_wm_key(struct xrdp_wm *self, int keyboard_flags, int key_code)
         if (ki != NULL)
         {
             xrdp_login_lvgl_key(self, ki->sym, ki->chr, !keyup,
-                               self->keys[SCANCODE_INDEX_LSHIFT_KEY] ||
-                               self->keys[SCANCODE_INDEX_RSHIFT_KEY]);
+                                self->keys[SCANCODE_INDEX_LSHIFT_KEY] ||
+                                self->keys[SCANCODE_INDEX_RSHIFT_KEY]);
         }
         return 0;
     }
