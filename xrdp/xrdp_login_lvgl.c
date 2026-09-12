@@ -11,6 +11,19 @@
 #include "xrdp_login_lvgl.h"
 #include "string_calls.h"
 
+void
+xrdp_login_lvgl_prepare_connect(struct xrdp_wm *wm)
+{
+    if (wm->login_ui != NULL)
+    {
+        /* Drop queued login pixels before the module can paint its first frame.
+         * Keep the widgets available if connecting fails. */
+        xrdp_region_delete(wm->screen_dirty_region);
+        wm->screen_dirty_region = NULL;
+        wm->mm->mod_uses_wm_screen_for_gfx = 0;
+    }
+}
+
 #ifdef XRDP_LVGL
 #include <lvgl.h>
 #include <fontconfig/fontconfig.h>

@@ -135,6 +135,40 @@ START_TEST(test_login_model)
 END_TEST
 
 #ifdef XRDP_LVGL
+START_TEST(test_lvgl_gfx_handoff)
+{
+    struct login_fixture f;
+    struct xrdp_rect rect = {0, 0, 800, 600};
+    struct xrdp_region *desktop_damage;
+    init_fixture(&f, 32);
+    ck_assert_int_eq(xrdp_login_lvgl_create(&f.wm, 0), 0);
+    f.client.gfx = 1;
+    f.wm.screen_dirty_region = xrdp_region_create(&f.wm);
+    xrdp_region_add_rect(f.wm.screen_dirty_region, &rect);
+    f.mm.mod_uses_wm_screen_for_gfx = 1;
+    xrdp_login_lvgl_prepare_connect(&f.wm);
+    ck_assert_ptr_null(f.wm.screen_dirty_region);
+    ck_assert_int_eq(f.mm.mod_uses_wm_screen_for_gfx, 0);
+    ck_assert_ptr_nonnull(f.wm.login_ui); /* A failed connect can still show errors. */
+
+    /* A module may queue its first frame while connecting. Preserve it, but
+     * prevent a pending toolkit refresh from painting over it afterwards. */
+    desktop_damage = xrdp_region_create(&f.wm);
+    xrdp_region_add_rect(desktop_damage, &rect);
+    f.wm.screen_dirty_region = desktop_damage;
+    f.wm.login_ui->dirty = 1;
+    xrdp_wm_mod_connect_done(&f.wm, 0);
+    ck_assert_int_eq(f.wm.login_state, WMLS_CLEANUP);
+    ck_assert_ptr_null(f.wm.login_ui);
+    ck_assert_int_eq(xrdp_login_lvgl_check(&f.wm), 0);
+    ck_assert_ptr_eq(f.wm.screen_dirty_region, desktop_damage);
+    ck_assert_int_eq(xrdp_region_get_rect(desktop_damage, 0, &rect), 0);
+    xrdp_region_delete(desktop_damage);
+    f.wm.screen_dirty_region = NULL;
+    free_fixture(&f);
+}
+END_TEST
+
 START_TEST(test_lvgl_pixels_and_isolation)
 {
     struct login_fixture f;
@@ -408,6 +442,7 @@ make_suite_login(void)
     tcase_set_timeout(tc, 20);
     tcase_add_test(tc, test_login_model);
 #ifdef XRDP_LVGL
+    tcase_add_test(tc, test_lvgl_gfx_handoff);
     tcase_add_test(tc, test_lvgl_pixels_and_isolation);
     tcase_add_test(tc, test_lvgl_input_and_lifecycle);
     tcase_add_test(tc, test_lvgl_concurrent_lifecycle);
