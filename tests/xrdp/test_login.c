@@ -135,6 +135,84 @@ START_TEST(test_login_model)
 END_TEST
 
 #ifdef XRDP_LVGL
+START_TEST(test_lvgl_logo_alpha)
+{
+    struct login_fixture f;
+    struct xrdp_login_lvgl *ui;
+    uint32_t *pixels;
+    int i;
+    int visible = 0;
+    init_fixture(&f, 32);
+    ck_assert_int_eq(xrdp_login_lvgl_create(&f.wm, 1), 0);
+    ui = f.wm.login_ui;
+    ck_assert_ptr_nonnull(ui->logo);
+    ck_assert_int_eq(ui->logo_image.header.cf, LV_COLOR_FORMAT_ARGB8888);
+    pixels = (uint32_t *)ui->logo->data;
+    ck_assert_uint_eq(pixels[0] >> 24, 0);
+    for (i = 0; i < ui->logo->width * ui->logo->height; ++i)
+    {
+        visible += (pixels[i] >> 24) != 0;
+    }
+    ck_assert_int_gt(visible, 0);
+    free_fixture(&f);
+
+    /* The matte in a custom BMP is content, not a transparency key. */
+    init_fixture(&f, 32);
+    g_strncpy(f.config.cfg_globals.ls_logo_filename,
+              XRDP_SHARE_PATH "/xrdp_logo.bmp", 255);
+    ck_assert_int_eq(xrdp_login_lvgl_create(&f.wm, 1), 0);
+    ui = f.wm.login_ui;
+    ck_assert_ptr_nonnull(ui->logo);
+    ck_assert_uint_eq(((uint32_t *)ui->logo->data)[0] >> 24, 255);
+    free_fixture(&f);
+}
+END_TEST
+
+START_TEST(test_lvgl_focus_outline)
+{
+    struct login_fixture f;
+    struct xrdp_login_lvgl *ui;
+    int i;
+    init_fixture(&f, 32);
+    strcpy(f.client.username, "lvgltest");
+    ck_assert_int_eq(xrdp_bitmap_resize(f.wm.screen, 1280, 1000), 0);
+    ck_assert_int_eq(xrdp_login_lvgl_create(&f.wm, 1), 0);
+    ui = f.wm.login_ui;
+    lv_obj_t *controls[] = {ui->edits[1], ui->edits[2], ui->submit};
+    for (i = 0; i < 3; ++i)
+    {
+        lv_area_t area;
+        int j;
+        int offset;
+        lv_group_focus_obj(controls[i]);
+        lv_refr_now(ui->display);
+        if (i == 0)
+        {
+            ck_assert_int_eq(lv_obj_get_scroll_x(controls[i]), 0);
+        }
+        lv_obj_get_coords(controls[i], &area);
+        offset = lv_obj_get_style_outline_pad(controls[i], 0) + 1;
+        lv_point_t points[] =
+        {
+            {area.x1 - offset, (area.y1 + area.y2) / 2},
+            {area.x2 + offset, (area.y1 + area.y2) / 2},
+            {(area.x1 + area.x2) / 2, area.y2 + offset}
+        };
+        for (j = 0; j < 3; ++j)
+        {
+            ck_assert_int_ge(points[j].x, 0);
+            ck_assert_int_lt(points[j].x, ui->frame->width);
+            ck_assert_int_ge(points[j].y, 0);
+            ck_assert_int_lt(points[j].y, ui->frame->height);
+            const uint32_t *pixels = (const uint32_t *)(ui->frame->data +
+                                     points[j].y * ui->frame->line_size);
+            ck_assert_int_eq(pixels[points[j].x] & 0xffffff, 0x007aff);
+        }
+    }
+    free_fixture(&f);
+}
+END_TEST
+
 START_TEST(test_lvgl_gfx_handoff)
 {
     struct login_fixture f;
@@ -442,6 +520,8 @@ make_suite_login(void)
     tcase_set_timeout(tc, 20);
     tcase_add_test(tc, test_login_model);
 #ifdef XRDP_LVGL
+    tcase_add_test(tc, test_lvgl_focus_outline);
+    tcase_add_test(tc, test_lvgl_logo_alpha);
     tcase_add_test(tc, test_lvgl_gfx_handoff);
     tcase_add_test(tc, test_lvgl_pixels_and_isolation);
     tcase_add_test(tc, test_lvgl_input_and_lifecycle);

@@ -5,6 +5,16 @@ messages. It renders in software into memory and sends changed rectangles
 through xrdp's existing painter. It does not start X11, Wayland, or another
 process for the login UI. The desktop session still starts in the usual way.
 
+## Screenshots
+
+Captured from native FreeRDP on macOS connected to the Docker test server using
+GFX. The connection log shows an intentionally failed login with the disposable
+test account.
+
+![Modern login with rounded controls and a transparent logo](images/lvgl-login.png)
+
+![Connection log with success and failure indicators and a retry action](images/lvgl-connection-log.png)
+
 ## Build
 
 The default build has no LVGL or Fontconfig dependency. To enable the adapter:
@@ -61,8 +71,10 @@ live blur or decorative animation. The login form preserves configured session
 choices, arbitrary `ask` fields and defaults, client prefilling, title, logo and background image.
 Legacy widget coordinates and colors are not applied to the modern layout.
 Image formats retain the existing xrdp image-loader requirements, including
-`--with-imlib2` for non-BMP files. Font coverage depends on the chosen system
-font; this does not add an input method or a translation system.
+`--with-imlib2` for non-BMP files. Logo alpha is preserved, including in custom
+PNG logos. The default logo uses the bundled transparent PNG with Imlib2, or
+removes the bundled BMP's uniform matte without Imlib2. Font coverage depends on
+the chosen system font; this does not add an input method or a translation system.
 
 For rounded typography throughout the modern interface, install a system
 Quicksand font package (for example, `fonts-quicksand` on Debian/Ubuntu).

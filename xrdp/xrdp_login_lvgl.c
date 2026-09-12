@@ -320,12 +320,12 @@ build_fields(struct xrdp_wm *wm)
             edit = lv_textarea_create(ui->fields);
             ui->edits[i] = edit;
             lv_obj_set_width(edit, LV_PCT(100));
+            style_control(ui, edit);
             lv_textarea_set_one_line(edit, true);
             lv_obj_set_scrollbar_mode(edit, LV_SCROLLBAR_MODE_OFF);
             lv_textarea_set_password_mode(edit, xrdp_login_is_secret(name));
             lv_textarea_set_password_show_time(edit, 0);
             lv_textarea_set_text(edit, value);
-            style_control(ui, edit);
             lv_obj_add_event_cb(edit, limit_insert, LV_EVENT_INSERT, NULL);
             lv_group_add_obj(ui->group, edit);
             if (focus == NULL || (username_set && xrdp_login_is_secret(name)))
@@ -400,15 +400,16 @@ place_card(struct xrdp_wm *wm)
 static void
 load_image(struct xrdp_wm *wm, const char *path, struct xrdp_bitmap **bitmap,
            lv_image_dsc_t *image, lv_obj_t *parent, enum xrdp_bitmap_load_transform transform,
-           int width, int height)
+           int width, int height, int transparent)
 {
     lv_obj_t *obj;
     if (path[0] == '\0')
     {
         return;
     }
-    *bitmap = xrdp_bitmap_create(4, 4, 24, WND_TYPE_BITMAP, wm);
-    if (xrdp_bitmap_load(*bitmap, path, wm->palette, 0xffffff,
+    *bitmap = xrdp_bitmap_create(4, 4, transparent ? 32 : 24, WND_TYPE_BITMAP, wm);
+    if (xrdp_bitmap_load(*bitmap, path, wm->palette,
+                         transparent ? XRDP_BITMAP_BACKGROUND_TRANSPARENT : 0xffffff,
                          transform, width, height) != 0)
     {
         xrdp_bitmap_delete(*bitmap);
@@ -416,7 +417,7 @@ load_image(struct xrdp_wm *wm, const char *path, struct xrdp_bitmap **bitmap,
         return;
     }
     image->header.magic = LV_IMAGE_HEADER_MAGIC;
-    image->header.cf = LV_COLOR_FORMAT_XRGB8888;
+    image->header.cf = transparent ? LV_COLOR_FORMAT_ARGB8888 : LV_COLOR_FORMAT_XRGB8888;
     image->header.w = (*bitmap)->width;
     image->header.h = (*bitmap)->height;
     image->header.stride = (*bitmap)->line_size;
@@ -487,7 +488,7 @@ create_view(struct xrdp_wm *wm, int prompt)
     lv_obj_set_style_text_font(screen, ui->font, 0);
     lv_obj_set_style_text_color(screen, lv_color_hex(0x1c2434), 0);
     load_image(wm, cfg->ls_background_image, &ui->background, &ui->background_image,
-               screen, cfg->ls_background_transform, wm->screen->width, wm->screen->height);
+               screen, cfg->ls_background_transform, wm->screen->width, wm->screen->height, 0);
     ui->card = lv_obj_create(screen);
     lv_obj_set_height(ui->card, LV_SIZE_CONTENT);
     lv_obj_set_flex_flow(ui->card, LV_FLEX_FLOW_COLUMN);
@@ -499,10 +500,29 @@ create_view(struct xrdp_wm *wm, int prompt)
     }
     else
     {
+#ifdef USE_IMLIB2
+        g_snprintf(path, sizeof(path), "%s/xrdp_logo.png", XRDP_SHARE_PATH);
+#else
         g_snprintf(path, sizeof(path), "%s/xrdp_logo.bmp", XRDP_SHARE_PATH);
+#endif
     }
     load_image(wm, path, &ui->logo, &ui->logo_image, ui->card, XBLT_SCALE,
-               px(ui, 88), px(ui, 34));
+               px(ui, 88), px(ui, 34), 1);
+#ifndef USE_IMLIB2
+    /* The bundled BMP has a uniform matte. Custom BMPs remain opaque. */
+    if (cfg->ls_logo_filename[0] == '\0' && ui->logo != NULL)
+    {
+        uint32_t *pixels = (uint32_t *)ui->logo->data;
+        uint32_t matte = pixels[0];
+        for (i = 0; i < ui->logo->width * ui->logo->height; ++i)
+        {
+            if (pixels[i] == matte)
+            {
+                pixels[i] = 0;
+            }
+        }
+    }
+#endif
     heading(ui, ui->card, cfg->ls_title[0] ? cfg->ls_title : "Hello again.");
     ui->status = label(ui->card, prompt ? "Your workspace, wherever you are." : "Connecting…");
     lv_obj_set_style_text_color(ui->status, lv_color_hex(0x596579), 0);
@@ -539,7 +559,11 @@ create_view(struct xrdp_wm *wm, int prompt)
     lv_obj_remove_style_all(ui->fields);
     lv_obj_set_size(ui->fields, LV_PCT(100), LV_SIZE_CONTENT);
     lv_obj_set_flex_flow(ui->fields, LV_FLEX_FLOW_COLUMN);
+    /* Keep focus outlines inside the transparent containers' clipping bounds. */
+    lv_obj_set_style_pad_all(ui->fields, px(ui, 6), 0);
     lv_obj_set_style_pad_row(ui->fields, px(ui, 10), 0);
+    /* Resolve field widths before prefilling text and positioning cursors. */
+    place_card(wm);
     if (build_fields(wm))
     {
         return 1;
@@ -548,6 +572,7 @@ create_view(struct xrdp_wm *wm, int prompt)
     lv_obj_remove_style_all(row);
     lv_obj_set_size(row, LV_PCT(100), LV_SIZE_CONTENT);
     lv_obj_set_flex_flow(row, LV_FLEX_FLOW_ROW_WRAP);
+    lv_obj_set_style_pad_all(row, px(ui, 6), 0);
     lv_obj_set_style_pad_gap(row, px(ui, 8), 0);
     lv_obj_set_flex_align(row, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     ui->submit = button(ui, row, "Continue", UI_SUBMIT);
