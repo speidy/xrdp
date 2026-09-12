@@ -2,4 +2,4 @@
 SUBDIRS = \
   man
 
-EXTRA_DIST = lvgl.md
+EXTRA_DIST = lvgl.md images/lvgl-login.png images/lvgl-connection-log.png
